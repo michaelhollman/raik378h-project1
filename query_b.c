@@ -7,9 +7,7 @@
 
 int main(int argc, char **argv)
 {
-    int i;
-int j;
-j = 0;
+int i;
 int timeCount = 0;
 int messageCount = 0;
 int messageFound = 0;
@@ -22,7 +20,7 @@ int mid = 0;
 
     /* print usage if needed */
     if (argc != 3) {
-        fprintf(stderr, "Usage: %s total_record_number\n", argv[0]);
+        msgfprintf(stderr, "Usage: %s total_record_number\n", argv[0]);
         exit(0);
     }
     
@@ -31,10 +29,10 @@ int mid = 0;
 	int total_timestamp_number = atoi(argv[2]);
     
 
-    char filename[1024];
+    char msgfilename[1024];
 	char tsfilename[1024];
-    FILE *fp = NULL;
-	FILE *ts = NULL:
+    FILE *msgfp = NULL;
+	FILE *tsfp = NULL:
 	
     
     struct timeval time_start, time_end;
@@ -44,60 +42,55 @@ int mid = 0;
     
     for (i = 0; i < total_message_number; i++) {
         /* open the corresponding file */  
-	        sprintf(filename, "message_%06d.dat", i);
+	        sprintf(msgfilename, "message_%06d.dat", i);
     
-        fp = fopen(filename,"rb");
+        msgfp = fopen(msgfilename,"rb");
     
-        if (!fp) {
+        if (!msgfp) {
             fprintf(stderr, "Cannot open %s\n", filename);
             exit(0);
         }
         
         /* read the record from the file */
-		//Cassey's read method
-        record_t *rp = read_record(fp);
-		timestampID = rp->timestampId;
-		userID = rp->userId;
-	    		
-        /* =========== start of data processing code ================ */
+        message_t *msgp = read_message(msgfp);
+		timestampID = msgp->timestampId;
+		userID = msgp->userId;
+
 		last = total_timestamp_number;
 		
 		while (first <= last){
 			int mid = (first + last) /2;
 			spintf(tsfilename, "timestamp_%06d.dat",mid);
 		
-			ts = fopen(tsfilename,"rb");
-			if (!ts) {
+			tsfp = fopen(tsfilename,"rb");
+			if (!tsfp) {
             fprintf(stderr, "Cannot open %s\n", tsfilename);
             exit(0);
 			}
-			if (timestampID > ts->timestampId){
+			
+			timestamp_t *tsp = read_timestamp(tsfp);
+			if (timestampID > tsp->timestampId){
 				first = mid + 1;
-				fclose(ts);
+				fclose(tsfp);
 			}
-			else if (timestampID > ts->timestampId){
+			else if (timestampID > tsp->timestampId){
 				last = mid - 1;
-				fclose(ts);
+				fclose(tsfp);
 			}
 			else {
-				if (ts->hour == 8 || (ts-> hour ==9 && ts->minute == 0)){
+				if (tsp->hour == 8 || (tsp-> hour ==9 && tsp->minute == 0)){
 					//TODO insert trippy michael hash function
 					timeCount +=1;
 				}
-				fclose(ts);
+				fclose(tsfp);
 				}
 		}
 		
-
-	    //print_record(rp);
-        
-        /* =========== end of data processing code ================ */    
-    
-        /* free memory */
-        free_record(rp);
-    
+		free_timestamp(tsp);
+		free_user(msgp);
+		
         /* close the file */
-        fclose(fp);
+        fclose(msgfp);
     }    
         
     printf("count is %d", timeCount);
