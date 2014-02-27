@@ -42,19 +42,10 @@ int main(int argc, char **argv)
 
         /* =========== start of data processing code ================ */
 
-        // doesn't include the first letter of location for some reason
-        char *location = rp->location;
-        char *keyword = "Nebraska";
-        if (strstr(location, keyword) != NULL) {
-            nebraskaCounter++;
-        //    printf("%s \n", rp->location);
-        }
-
-
-
-
-        //print_record(rp);
-
+        
+        // TODO -- TONS OF STUFF!!!!!
+        
+        
         /* =========== end of data processing code ================ */
 
         /* free memory */
