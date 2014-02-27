@@ -44,7 +44,7 @@ int mid = 0;
     
     for (i = 0; i < total_message_number; i++) {
         /* open the corresponding file */  
-	        sprintf(filename, "record_%06d.dat", i);
+	        sprintf(filename, "message_%06d.dat", i);
     
         fp = fopen(filename,"rb");
     
@@ -67,7 +67,10 @@ int mid = 0;
 			spintf(tsfilename, "timestamp_%06d.dat",mid);
 		
 			ts = fopen(tsfilename,"rb");
-			//location_t *lp = readtimestampmethod(ts);
+			if (!ts) {
+            fprintf(stderr, "Cannot open %s\n", tsfilename);
+            exit(0);
+			}
 			if (timestampID > ts->timestampId){
 				first = mid + 1;
 				fclose(ts);
@@ -77,7 +80,7 @@ int mid = 0;
 				fclose(ts);
 			}
 			else {
-				if (ts->hour == 8){
+				if (ts->hour == 8 || (ts-> hour ==9 && ts->minute == 0)){
 					//TODO insert trippy michael hash function
 					timeCount +=1;
 				}
