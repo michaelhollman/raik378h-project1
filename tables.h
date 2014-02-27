@@ -9,7 +9,7 @@
 #define TEXT_LONG       1024
 
 
-/* user structure */
+// user
 typedef struct {
     int userId;                     /* user id */
     char name[TEXT_SHORT];      /* user name */
@@ -17,14 +17,14 @@ typedef struct {
     int stateId;
 } user_t;
 
-/* city structure */
+// location
 typedef struct {
-    int cityId;
+    int locationId;
     char cityName[TEXT_SHORT];
-    int stateId;
     char stateName[TEXT_SHORT];
-} city_t;
+} location_t;
 
+// timestamp
 typedef struct {
     int timestampId;
     int year;
@@ -34,12 +34,14 @@ typedef struct {
     int minute;
 } timestamp_t;
 
+// message
 typedef struct {
     int messageId;
     int userId;
     int timestampId;
     char text[TEXT_SHORT];
 } message_t;
+
 
 void print_message(message_t *message);
 
@@ -54,13 +56,3 @@ timestamp_t *read_timestamp(FILE *fp);
 city_t *read_city(FILE *fp);
 
 #endif
-
-
-
-
-
-
-
-
-
-

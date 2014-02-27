@@ -52,11 +52,13 @@ int testUserRead(char *fileName) {
 			return 1;
 		}
         user = read_user(ptr_file);
+    
         /*
         fread(&readUser,sizeof(user_t),1,ptr_file);
         printf("%d\n",readUser.userId);
         printf("%s\n", readUser.name);
         */
+    
         printf("%d\n", user->userId);
         printf("%s\n", user->name);
 		fclose(ptr_file);
