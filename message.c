@@ -41,11 +41,6 @@ message_t *read_message(int fileNum)
         exit(0);
     }
     
-    if (fp == NULL) {
-        fprintf(stderr, "The file stream is NULL\n");
-        exit(0);
-    }
-    
     message_t *message = (message_t *)malloc(sizeof(message_t));
     
     // read message
@@ -57,7 +52,29 @@ message_t *read_message(int fileNum)
     return message;
 }
 
-void write_message(int fileNum, message_t *message);
+void write_message(int fileNum, message_t *message)
+{
+    // set up file
+    FILE *fp;
+    char filename[1024];
+    sprintf(filename, "message_%08d.dat", fileNum);
+    
+    // open file
+    fp = fopen(filename, "wb");
+    if (!fp)
+    {
+        printf("Unable to open file.");
+        return;
+    }
+    
+    // write user
+    fwrite(&(message->messageId), sizeof(int), 1, fp);
+    fwrite(&(message->userId), sizeof(int), 1, fp);
+    fwrite(&(message->timestampId), sizeof(int), 1, fp);
+    fwrite(&(message->text[0]), sizeof(char), TEXT_LONG, fp);
+    
+    fclose(fp);
+}
 
 void free_message(message_t *message)
 {

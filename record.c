@@ -1,7 +1,7 @@
 #include "record.h"
 
 //print a message
-void print_record_message(message_t *message)
+void print_record_message(message_record_t *message)
 {
     //message cannot be NULL
     if (message == NULL) {
@@ -44,7 +44,7 @@ void print_record(record_t *record)
 }
 
 //read a message from a file
-void read_record_message(message_t *message, FILE *fp)
+void read_record_message(message_record_t *message, FILE *fp)
 {
     //Assume file has been opened
     if (fp == NULL) {
@@ -108,7 +108,7 @@ record_t *read_record(FILE *fp)
     if (record->message_num > 0) {
 
         //allocate memory
-        record->messages = (message_t *)malloc(sizeof(message_t) *
+        record->messages = (message_record_t *)malloc(sizeof(message_record_t) *
                                                record->message_num);
 
         //memory error

@@ -15,7 +15,7 @@ typedef struct {
     int day;
     int hour;                   // 0 - 23
     int minute;                 // 0 - 59
-} message_t;
+} message_record_t;
 
 
 // record structure
@@ -24,7 +24,7 @@ typedef struct {
     char name[TEXT_SHORT];      // user name
     char location[TEXT_SHORT];  // user location
     int message_num;            // number of send message
-    message_t *messages;        // messages
+    message_record_t *messages;        // messages
 } record_t;
 
 

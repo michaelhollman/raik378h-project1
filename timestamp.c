@@ -42,11 +42,6 @@ timestamp_t *read_timestamp(int fileNum)
         exit(0);
     }
     
-    if (fp == NULL) {
-        fprintf(stderr, "The file stream is NULL\n");
-        exit(0);
-    }
-    
     // allocate memory for the record
     timestamp_t *timestamp = (timestamp_t *)malloc(sizeof(timestamp_t));
     
@@ -67,7 +62,31 @@ timestamp_t *read_timestamp(int fileNum)
     return timestamp;
 }
 
-void write_timestamp(int fileNum, timestamp_t *timestamp);
+void write_timestamp(int fileNum, timestamp_t *timestamp)
+{
+    // set up file
+    FILE *fp;
+    char filename[1024];
+    sprintf(filename, "timestamp_%08d.dat", fileNum);
+    
+    // open file
+    fp = fopen(filename, "wb");
+    if (!fp)
+    {
+        printf("Unable to open file.");
+        return;
+    }
+    
+    // write user
+    fwrite(&(timestamp->timestampId), sizeof(int), 1, fp);
+    fwrite(&(timestamp->year), sizeof(int), 1, fp);
+    fwrite(&(timestamp->month), sizeof(int), 1, fp);
+    fwrite(&(timestamp->day), sizeof(int), 1, fp);
+    fwrite(&(timestamp->hour), sizeof(int), 1, fp);
+    fwrite(&(timestamp->minute), sizeof(int), 1, fp);
+    
+    fclose(fp);
+}
 
 void free_timestamp(timestamp_t *timestamp)
 {

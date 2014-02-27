@@ -38,11 +38,6 @@ user_t *read_user(int fileNum)
         fprintf(stderr, "Cannot open %s\n", filename);
         exit(0);
     }
-
-    if (fp == NULL) {
-        fprintf(stderr, "The file stream is NULL\n");
-        exit(0);
-    }
     
     // allocate memory for the user
     user_t *user = (user_t *)malloc(sizeof(user_t));
@@ -61,7 +56,8 @@ user_t *read_user(int fileNum)
 }
 
 
-void write_user(int fileNum, user_t *user){
+void write_user(int fileNum, user_t *user)
+{
     // set up file
     FILE *fp;
     char filename[1024];

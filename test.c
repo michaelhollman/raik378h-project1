@@ -2,32 +2,34 @@
 #include <stdio.h>
 
 #include "user.h"
+#include "message.h"
+#include "location.h"
+#include "timestamp.h"
 
 int main()
 {
-    //http://www.codingunit.com/c-tutorial-binary-file-io
-    //    char *fileName;
-    //    fileName = "userFile1.dat";
-    //    testUserWrite(fileName);
-    //    printf("Closed. Now reopening \n");
-    //    testUserRead(fileName);
-    
-    
-    
+    // user
     user_t user;
-    
-    user.userId = 1;
-    user.locationId = 2;
+    user.userId = 476;
+    user.locationId = 3338;
     strncpy(user.name, "Cassey", TEXT_SHORT);
     
     print_user(&user);
     write_user(1,&user);
-
-    user_t *read = read_user(1);
+    user_t *readuser = read_user(1);
+    print_user(readuser);
     
-    print_user(read);
+    // message
+    message_t message;
+    message.messageId = 987;
+    message.userId = 654;
+    message.timestampId = 321;
+    strncpy(message.text, "Hello my name is Igor and I will be your friend.", TEXT_LONG);
+    
+    print_message(&message);
+    write_message(1,&message);
+    message_t *readmessage = read_message(1);
+    print_message(readmessage);
     
     return 0;
-    
-    
 }
