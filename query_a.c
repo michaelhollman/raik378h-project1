@@ -54,10 +54,10 @@ int main(int argc, char **argv)
         
         /* read the record from the file */
         //TODO Insert Casseys method to read the file
-		user_t *rp = read_user(fp);
+		user_t *up = read_user(fp);
 			
         /* =========== start of data processing code ================ */
-		locationID = rp-> locationId;
+		locationID = up-> locationId;
 		last = total_location_number;
 		
 		while (first <= last){
@@ -67,8 +67,8 @@ int main(int argc, char **argv)
 			lf = fopen(locfilename,"rb");
 			
 			if (!lf) {
-            fprintf(stderr, "Cannot open %s\n", locfilename);
-            exit(0);
+				fprintf(stderr, "Cannot open %s\n", locfilename);
+				exit(0);
 			}
 			
 			location_t *lp = read_location(lf);
@@ -86,19 +86,12 @@ int main(int argc, char **argv)
 				}
 				fclose(lf);
 				}
-		}
-	}
+				free_record(lp);
+			}
 		
-        
-        
-        /* =========== end of data processing code ================ */    
-    
-        /* free memory */
-        free_record(rp);
-    
-        /* close the file */
-        fclose(fp);
-    }    
+		       free_record(up);
+			   fclose(fp);
+		}
         
     printf("count is %d", nebraskaCount);
     /* end time */
