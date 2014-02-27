@@ -23,9 +23,10 @@ int main(int argc, char **argv)
     last = 0;
     locationID = 0;
     char nebraska[]  = "Nebraska";
+
     /* print usage if needed */
     if (argc != 3) {
-        fprintf(stderr, "Usage: %s total_user_number\n", argv[0]);
+        fprintf(stderr, "Usage: %s total_user_number total_location_number\n", argv[0]);
         exit(0);
     }
 
