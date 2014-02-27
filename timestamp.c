@@ -23,7 +23,7 @@ void print_timestamp(timestamp_t *timestamp)
     }
     
     printf("Timestamp: %08d\n", timestamp->timestampId);
-    printf("MM/DD/YYYY HH:MM: %02d/%02d/%04d %02d:%02d\n", timestamp->month, timestamp->day,
+    printf("\tMM/DD/YYYY HH:MM: %02d/%02d/%04d %02d:%02d\n", timestamp->month, timestamp->day,
            timestamp->year, timestamp->hour, timestamp->minute);
 }
 
