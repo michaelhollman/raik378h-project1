@@ -1,1 +1,2 @@
 test: test.c user.c message.c timestamp.c location.c record.c; gcc -o test test.c user.c message.c timestamp.c location.c record.c
+query_a: query_a.c user.c message.c timestamp.c location.c record.c; gcc -o query_a query_a.c user.c message.c timestamp.c location.c record.c
