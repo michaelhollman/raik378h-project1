@@ -54,7 +54,7 @@ int main(int argc, char **argv)
         
         /* read the record from the file */
         //TODO Insert Casseys method to read the file
-		user_t *rp = read_record(fp);
+		user_t *rp = read_user(fp);
 			
         /* =========== start of data processing code ================ */
 		locationID = rp-> locationId;
@@ -65,7 +65,13 @@ int main(int argc, char **argv)
 			spintf(locfilename, "location_%06d.dat",mid);
 		
 			lf = fopen(locfilename,"rb");
-			//location_t *lp = readlocationmethod(lf);
+			
+			if (!lf) {
+            fprintf(stderr, "Cannot open %s\n", locfilename);
+            exit(0);
+			}
+			
+			location_t *lp = read_location(lf);
 			if (locationID > lp->locationId){
 				first = mid + 1;
 				fclose(lf);
