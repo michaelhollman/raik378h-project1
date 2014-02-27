@@ -3,6 +3,7 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <stdbool.h>
 
 #define TEXT_SHORT      64
 #define TEXT_LONG       1024

@@ -27,5 +27,8 @@ void write_timestamp(int fileNum, timestamp_t *timestamp);
 
 void free_timestamp(timestamp_t *timestamp);
 
+int compare_timestamps(timestamp_t *a, timestamp_t *b);
+
+unsigned long hash_timestamp(timestamp_t *timestamp);
 
 #endif

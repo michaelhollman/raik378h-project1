@@ -2,8 +2,14 @@
 #include <stdlib.h>
 #include <sys/times.h>
 #include <string.h>
+#include <stdbool.h>
 
+#include "process_records.h"
 #include "record.h"
+#include "user.h"
+#include "message.h"
+#include "timestamp.h"
+#include "location.h"
 
 int main(int argc, char **argv)
 {

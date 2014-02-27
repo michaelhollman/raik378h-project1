@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 
 #include "location.h"
 
@@ -87,4 +88,28 @@ void free_location(location_t *location)
     }
     
     free(location);
+}
+
+int compare_locations(location_t *a, location_t *b)
+{
+    // swap city/state to determine "sort by x, then by y" behavior
+    int c = strcmp(a->state, b->state);
+    if (c != 0) return c;
+    return strcmp(a->city, b->city);
+}
+
+unsigned long hash_location(location_t *location)
+{
+    char *citystr = location->city;
+    char *statestr = location->state;
+    
+    // modified djb2 hash from http://www.cse.yorku.ca/~oz/hash.html
+    unsigned long hash = 5381;
+    int c;
+    while ((c = *citystr++))
+        hash = ((hash << 5) + hash) + c;
+    while ((c = *statestr++))
+        hash = ((hash << 5) + hash) + c;
+    
+    return hash;
 }

@@ -24,5 +24,8 @@ void write_user(int fileNum, user_t *user);
 
 void free_user(user_t *user);
 
+int compare_users(user_t *a, user_t *b);
+
+unsigned long hash_user(user_t *user);
 
 #endif

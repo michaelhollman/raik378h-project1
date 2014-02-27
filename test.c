@@ -19,6 +19,12 @@ int main()
     user_t *readuser = read_user(1);
     print_user(readuser);
     
+    if (compare_users(&user, readuser) == 0)
+    {
+        printf("%lu\n", hash_user(&user));
+        printf("%lu\n", hash_user(readuser));
+    }
+    
     // message
     message_t message;
     message.messageId = 987;
@@ -42,6 +48,12 @@ int main()
     location_t *readlocation = read_location(1);
     print_location(readlocation);
     
+    if (compare_locations(&location, readlocation) == 0)
+    {
+        printf("%lu\n", hash_location(&location));
+        printf("%lu\n", hash_location(readlocation));
+    }
+    
     // timestamp
     timestamp_t timestamp;
     timestamp.timestampId = 789423;
@@ -55,6 +67,12 @@ int main()
     write_timestamp(1, &timestamp);
     timestamp_t *readtimestamp = read_timestamp(1);
     print_timestamp(readtimestamp);
+    
+    if (compare_timestamps(&timestamp, readtimestamp) == 0)
+    {
+        printf("%lu\n", hash_timestamp(&timestamp));
+        printf("%lu\n", hash_timestamp(readtimestamp));
+    }
     
     return 0;
 }

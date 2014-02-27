@@ -24,5 +24,8 @@ void write_location(int fileNum, location_t *location);
 
 void free_location(location_t *location);
 
+int compare_locations(location_t *a, location_t *b);
+
+unsigned long hash_location(location_t *location);
 
 #endif

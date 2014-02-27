@@ -1,3 +1,5 @@
+// slightly modified version of original file from assignment 1
+
 #ifndef __RECORD_H__
 #define __RECORD_H__
 

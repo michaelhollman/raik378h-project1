@@ -1,3 +1,5 @@
+// slightly modified version of original file from assignment 1
+
 #include "record.h"
 
 //print a message

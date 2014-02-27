@@ -96,3 +96,17 @@ void free_timestamp(timestamp_t *timestamp)
     
     free(timestamp);
 }
+
+int compare_timestamps(timestamp_t *a, timestamp_t *b)
+{
+    return (hash_timestamp(a) - hash_timestamp(b));
+}
+
+unsigned long hash_timestamp(timestamp_t *timestamp){
+    // YYYYMMDDHHMM
+    return ((unsigned long)(timestamp->year)*100000000) +
+           ((unsigned long)(timestamp->month) * 1000000) +
+           ((unsigned long)(timestamp->day) * 10000) +
+           ((unsigned long)(timestamp->hour) * 100) +
+           ((unsigned long)timestamp->minute);
+}
