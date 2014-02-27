@@ -86,10 +86,10 @@ int main(int argc, char **argv)
 				}
 				fclose(lf);
 				}
-				free_record(lp);
+				free_location(lp);
 			}
 		
-		       free_record(up);
+		       free_user(up);
 			   fclose(fp);
 		}
         
