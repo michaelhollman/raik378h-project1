@@ -1,6 +1,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+#include "message.h"
+
 // message
 //    typedef struct {
 //        int messageId;
@@ -10,20 +12,35 @@
 //    } message_t;
 
 
-void print_message(message_t *message){
+void print_message(message_t *message)
+{
     // message cannot be NULL
     if (message == NULL) {
         fprintf(stderr, "The message is NULL\n");
         exit(0);
     }
 
-    // print message text
-    printf("Text: %s\n", message->text);
+    printf("Message: %08d\n", message->messageId);
+    printf("\t%-12s: %08d\n", "userId", message->userId);
+    printf("\t%-12s: %08d\n", "timestampId", message->timestampId);
+    printf("\t%-12s: %s\n", "text", message->text);
 }
 
-message_t *read_message(FILE *fp)
+message_t *read_message(int fileNum)
 {
-    // Assume file has been opened
+    // set up file
+    FILE *fp;
+    char filename[1024];
+    sprintf(filename, "message_%08d.dat", fileNum);
+    
+    // open file
+    fp = fopen(filename, "rb");
+    
+    if (!fp) {
+        fprintf(stderr, "Cannot open %s\n", filename);
+        exit(0);
+    }
+    
     if (fp == NULL) {
         fprintf(stderr, "The file stream is NULL\n");
         exit(0);
@@ -40,7 +57,7 @@ message_t *read_message(FILE *fp)
     return message;
 }
 
-void write_message(char *fileName, message_t *message);
+void write_message(int fileNum, message_t *message);
 
 void free_message(message_t *message)
 {

@@ -11,17 +11,16 @@
 // user
 typedef struct {
     int userId;
+    int locationId;
     char name[TEXT_SHORT];
-    int cityId;
-    int stateId;
 } user_t;
 
 
 void print_user(user_t *user);
 
-user_t *read_user(FILE *fp);
+user_t *read_user(int fileNum);
 
-void write_user(char *fileName, user_t *user);
+void write_user(int fileNum, user_t *user);
 
 void free_user(user_t *user);
 

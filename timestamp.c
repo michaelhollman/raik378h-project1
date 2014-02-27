@@ -1,24 +1,47 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include <timestamp.h>
+
+#include "timestamp.h"
 
 // timestamp
 //    typedef struct {
 //        int timestampId;
-//        char name[TEXT_SHORT];
-//        int cityId;
-//        int stateId;
+//        int year;
+//        int month;
+//        int day;
+//        int hour;
+//        int minute;
 //    } timestamp_t;
 
 
-void print_timestamp(timestamp_t *timestamp){
-    printf("Time: %02d/%02d/%04d %02d:%02d\n", timestamp_t->month, timestamp_t->day,
-           timestamp_t->year, timestamp_t->hour, timestamp_t->minute);
+void print_timestamp(timestamp_t *timestamp)
+{
+    // timestamp cannot be NULL
+    if (timestamp == NULL) {
+        fprintf(stderr, "The timestamp is NULL\n");
+        exit(0);
+    }
+    
+    printf("Timestamp: %08d\n", timestamp->timestampId);
+    printf("MM/DD/YYYY HH:MM: %02d/%02d/%04d %02d:%02d\n", timestamp->month, timestamp->day,
+           timestamp->year, timestamp->hour, timestamp->minute);
 }
 
-timestamp_t *read_timestamp(FILE *fp)
+timestamp_t *read_timestamp(int fileNum)
 {
-    // Assume file has been opened
+    // set up file
+    FILE *fp;
+    char filename[1024];
+    sprintf(filename, "timestamp_%08d.dat", fileNum);
+    
+    // open file
+    fp = fopen(filename, "rb");
+    
+    if (!fp) {
+        fprintf(stderr, "Cannot open %s\n", filename);
+        exit(0);
+    }
+    
     if (fp == NULL) {
         fprintf(stderr, "The file stream is NULL\n");
         exit(0);
@@ -33,6 +56,7 @@ timestamp_t *read_timestamp(FILE *fp)
         exit(0);
     }
     
+    // read timestamp
     fread(&(timestamp->timestampId), sizeof(int), 1, fp);
     fread(&(timestamp->year), sizeof(int), 1, fp);
     fread(&(timestamp->month), sizeof(int), 1, fp);
@@ -43,7 +67,7 @@ timestamp_t *read_timestamp(FILE *fp)
     return timestamp;
 }
 
-void write_timestamp(char *fileName, timestamp_t *timestamp);
+void write_timestamp(int fileNum, timestamp_t *timestamp);
 
 void free_timestamp(timestamp_t *timestamp)
 {

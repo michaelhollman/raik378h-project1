@@ -18,9 +18,9 @@ typedef struct {
 
 void print_location(location_t *location);
 
-location_t *read_location(FILE *fp);
+location_t *read_location(int fileNum);
 
-void write_location(char *fileName, location_t *location);
+void write_location(int fileNum, location_t *location);
 
 void free_location(location_t *location);
 

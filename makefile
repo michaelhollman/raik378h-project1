@@ -1,0 +1,1 @@
+test: test.c user.c message.c timestamp.c location.c record.c; gcc -o test test.c user.c message.c timestamp.c location.c record.c

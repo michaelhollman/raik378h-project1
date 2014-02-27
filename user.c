@@ -1,21 +1,44 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include <user.h>
+
+#include "user.h"
 
 // user
 //    typedef struct {
 //        int userId;
+//        int locationId;
 //        char name[TEXT_SHORT];
-//        int cityId;
-//        int stateId;
 //    } user_t;
 
 
-void print_user(user_t *user);
-
-user_t *read_user(FILE *fp)
+void print_user(user_t *user)
 {
-    // Assume file has been opened
+    // user cannot be NULL
+    if (user == NULL) {
+        fprintf(stderr, "The user is NULL\n");
+        exit(0);
+    }
+    
+    printf("User: %08d\n", user->userId);
+    printf("\t%-12s: %s\n", "name", user->name);
+    printf("\t%-12s: %08d\n", "locationId", user->locationId);
+}
+
+user_t *read_user(int fileNum)
+{
+    // set up file
+    FILE *fp;
+    char filename[1024];
+    sprintf(filename, "user_%08d.dat", fileNum);
+    
+    // open file
+    fp = fopen(filename, "rb");
+    
+    if (!fp) {
+        fprintf(stderr, "Cannot open %s\n", filename);
+        exit(0);
+    }
+
     if (fp == NULL) {
         fprintf(stderr, "The file stream is NULL\n");
         exit(0);
@@ -30,24 +53,35 @@ user_t *read_user(FILE *fp)
         exit(0);
     }
     
-    // read user id
     fread(&(user->userId), sizeof(int), 1, fp);
+    fread(&(user->locationId), sizeof(int), 1, fp);
+    fread(&(user->name[0]), sizeof(char), TEXT_SHORT, fp);
     
-    // read user name
-    fread(&(record->name[0]), sizeof(char), TEXT_SHORT, fp);
-    
-    // read cityId
-    fread(&(record->cityId), sizeof(int), 1, fp);
-    
-    // read stateId
-    fread(&(record->stateId), sizeof(int), 1, fp);
-    
-    // return the user
     return user;
 }
 
 
-void write_user(char *fileName, user_t *user);
+void write_user(int fileNum, user_t *user){
+    // set up file
+    FILE *fp;
+    char filename[1024];
+    sprintf(filename, "user_%08d.dat", fileNum);
+    
+    // open file
+    fp = fopen(filename, "wb");
+    if (!fp)
+    {
+        printf("Unable to open file.");
+        return;
+    }
+
+    // write user
+    fwrite(&(user->userId), sizeof(int), 1, fp);
+    fwrite(&(user->locationId), sizeof(int), 1, fp);
+    fwrite(&(user->name[0]), sizeof(char), TEXT_SHORT, fp);
+    
+    fclose(fp);
+}
 
 void free_user(user_t *user)
 {

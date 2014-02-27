@@ -11,17 +11,19 @@
 // timestamp
 typedef struct {
     int timestampId;
-    char name[TEXT_SHORT];
-    int cityId;
-    int stateId;
+    int year;
+    int month;
+    int day;
+    int hour;
+    int minute;
 } timestamp_t;
 
 
 void print_timestamp(timestamp_t *timestamp);
 
-timestamp_t *read_timestamp(FILE *fp);
+timestamp_t *read_timestamp(int fileNum);
 
-void write_timestamp(char *fileName, timestamp_t *timestamp);
+void write_timestamp(int fileNum, timestamp_t *timestamp);
 
 void free_timestamp(timestamp_t *timestamp);
 

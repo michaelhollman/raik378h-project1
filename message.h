@@ -19,9 +19,9 @@ typedef struct {
 
 void print_message(message_t *message);
 
-message_t *read_message(FILE *fp);
+message_t *read_message(int fileNum);
 
-void write_message(char *fileName, message_t *message);
+void write_message(int fileNum, message_t *message);
 
 void free_message(message_t *message);
 

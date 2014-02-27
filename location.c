@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include <record.h>
+
+#include "location.h"
 
 // location
 //    typedef struct {
@@ -10,11 +11,35 @@
 //    } location_t;
 
 
-void print_location(location_t *location);
-
-location_t *read_location(FILE *fp)
+void print_location(location_t *location)
 {
-    // Assume file has been opened
+    // location cannot be NULL
+    if (location == NULL) {
+        fprintf(stderr, "The location is NULL\n");
+        exit(0);
+    }
+    
+    // print location
+    printf("Location: %08d\n", location->locationId);
+    printf("\t%-12s: %s\n", "city", location->city);
+    printf("\t%-12s: %s\n", "state", location->state);
+}
+
+location_t *read_location(int fileNum)
+{
+    // set up file
+    FILE *fp;
+    char filename[1024];
+    sprintf(filename, "location_%08d.dat", fileNum);
+    
+    // open file
+    fp = fopen(filename, "rb");
+    
+    if (!fp) {
+        fprintf(stderr, "Cannot open %s\n", filename);
+        exit(0);
+    }
+    
     if (fp == NULL) {
         fprintf(stderr, "The file stream is NULL\n");
         exit(0);
@@ -29,6 +54,7 @@ location_t *read_location(FILE *fp)
         exit(0);
     }
     
+    // read location
     fread(&(location->locationId), sizeof(int), 1, fp);
     fread(&(location->city[0]), sizeof(char), TEXT_SHORT, fp);
     fread(&(location->state[0]), sizeof(char), TEXT_SHORT, fp);
@@ -36,7 +62,7 @@ location_t *read_location(FILE *fp)
     return location;
 }
 
-void write_location(char *fileName, location_t *location);
+void write_location(int fileNum, location_t *location);
 
 void free_location(location_t *location)
 {
