@@ -149,18 +149,6 @@ int main(int argc, char **argv)
 		free_timestamp(tsp);
 	}
 
-
-	for(j = 0; j < total_message_number; j++){
-		message_t *message = read_message(j);
-		if(validTime[message->timestampId]){
-			if(validUserID[message->userId] > -1){
-				validUserID[message->userId]++;
-			}
-		}
-		free_message(message);
-	}
-
-
 	for(j = 0; j < total_message_number; j++){
 		message_t *message = read_message(j);
 		if(validTime[message->timestampId]){
