@@ -62,9 +62,7 @@ int main(int argc, char **argv)
 			last = mid - 1;
 		}
 		else {
-			if (tsp->hour == 8 || (tsp-> hour ==9 && tsp->minute == 0)){
-					timeCount +=1;
-			}
+			first = last + 1;
 		}
 		free_timestamp(tsp);
 	}
@@ -75,6 +73,9 @@ int main(int argc, char **argv)
 		if (tsp->hour == 8 || (tsp-> hour ==9 && tsp->minute == 0)){
 			 validTime[i] = true;
 		}
+		else{
+            i = total_timestamp_number;
+		}
 		free_timestamp(tsp);
 
 	}
@@ -84,6 +85,9 @@ int main(int argc, char **argv)
 		if (tsp->hour == 8 || (tsp-> hour ==9 && tsp->minute == 0)){
 			 validTime[i] = true;
 		}
+		else{
+            i = -1;
+		}
 		free_timestamp(tsp);
 	}
 
@@ -91,14 +95,12 @@ int main(int argc, char **argv)
         /* read the record from the file */
         message_t *msgp = read_message(i);
 		timestampID = msgp->timestampId;
-		userID = msgp->userId;
 
 		if (validTime[timestampID]){
-			if (validUser[userID]){
+            userID = msgp->userId;
+			if (!validUser[userID]){
+			    validUser[userID] = true;
 				timeCount ++;
-			}
-			else{
-              validUser[userID] = true;
 			}
 		}
 
