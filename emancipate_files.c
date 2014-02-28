@@ -9,6 +9,8 @@ int main(int argc, char **argv)
     int i;
     unsigned long tot;
     
+    remove("file_count.dat");
+    
     // USERS
     i=0;
     sprintf(filename, "user_%08d.dat", i);

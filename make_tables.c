@@ -255,8 +255,6 @@ int main(int argc, char **argv)
             
             write_message(messageCount, &message);
             messageCount++;
-            
-            //print_message(&message);
         }
         
         // free record
@@ -345,7 +343,6 @@ int main(int argc, char **argv)
     clock_t endTime = clock();
     double totaltime = (double)(endTime - startTime)/CLOCKS_PER_SEC;
     printf("\nProcess time %f seconds\n", totaltime);
-    
     
     
     return 0;
