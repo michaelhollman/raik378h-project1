@@ -76,6 +76,7 @@ int main(int argc, char **argv)
 				}
 				free_location(locPnt);
 			}
+			last = first -1;
 		}
 		else if(strcmp(locPnt->state, nebraska) < 0){
 			first = mid + 1;
