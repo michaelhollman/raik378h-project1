@@ -1,6 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include <sys/times.h>
+#include <sys/time.h>
 
 #include "record.h"
 #include "user.h"
@@ -37,8 +37,13 @@ int mid = 0;
 	char tsfilename[1024];
     FILE *msgfp = NULL;
 	FILE *tsfp = NULL;
+<<<<<<< Updated upstream
 
 
+=======
+	
+    
+>>>>>>> Stashed changes
     struct timeval time_start, time_end;
 
     /* start time */

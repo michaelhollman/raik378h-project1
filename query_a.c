@@ -12,6 +12,7 @@
 int main(int argc, char **argv)
 {
     int i;
+<<<<<<< Updated upstream
     int nebraskaCount;
     nebraskaCount = 0;
     int locationID;
@@ -24,6 +25,19 @@ int main(int argc, char **argv)
     locationID = 0;
     char nebraska[]  = "Nebraska";
 
+=======
+	int nebraskaCount;
+	nebraskaCount = 0;
+	int locationID;
+	int mid;
+	int first;
+	int last;
+	mid = 0;
+	first = 0;
+	last = 0;
+	locationID = 0;
+	char nebraska[]  = "Nebraska";
+>>>>>>> Stashed changes
     /* print usage if needed */
     if (argc != 3) {
         fprintf(stderr, "Usage: %s total_user_number total_location_number\n", argv[0]);

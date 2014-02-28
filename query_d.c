@@ -1,21 +1,20 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include <sys/times.h>
+#include <sys/time.h>
 
-#include "record.h"
-
+#include "location.h"
+#include "message.h"
+#include "timestamp.h"
+#include "user.h"
 
 int main(int argc, char **argv)
 {
-int i;
-
+int i =0;
 int count = 0;
 int messageFound = 0;
 int timestampID = 0;
 int locationID = 0;
 int userID = 0;
-int maxId = 0;
-int maxCount = 0;
 int last = 0;
 int first = 0;
 int mid = 0;
@@ -23,8 +22,8 @@ char nebraska[]  = "Nebraska";
 
 
     /* print usage if needed */
-    if (argc != 4) {
-        msgrintf(stderr, "Usage: %s total_record_number\n", argv[0]);
+   if (argc != 5) {
+        msgrintf(stderr, "Usage: %s total_message_number total_timestamp_number total_user_number total_location_number\n", argv[0]);
         exit(0);
     }
     
@@ -33,144 +32,87 @@ char nebraska[]  = "Nebraska";
 	int total_timestamp_number = atoi(argv[2]);
 	int total_user_number = atoi(argv[3]);
 	int total_location_number = atoi(argv[4]);
-    
 
-    char filename[1024];
-	char tsfilename[1024];
-	char userfilename[1024];
-    FILE *msg = NULL;
-	FILE *timestamp = NULL:
-	FILE *locationfile = NULL: 
-	FILE *userfile = NULL; 
-	
-	
     struct timeval time_start, time_end;
     
     /* start time */
     gettimeofday(&time_start, NULL);
     
     for (i = 0; i < total_message_number; i++) {
-        /* open the corresponding file */  
-	        sprintf(filename, "message_%06d.dat", i);
-    
-        msg = fopen(filename,"rb");
-    
-        if (!msg) {
-            msgrintf(stderr, "Cannot open %s\n", filename);
-            exit(0);
-        }
         
         /* read the record from the file */
-        //record_t *rp = read_record(msg); TODO Cassey's read message
-		timestampID = rp->timestampID;
-		userID = ->userId;
+        message_t *messagePtr = read_message(i); 
+		timestampID = messagePtr->timestampID;
+		userID = messagePtr->userId;
 
 		first = 0;
 		last = total_timestamp_number;
 		//check if hour is equal to 8
 		while (first <= last){
 			int mid = (first + last) /2;
-			spintf(tsfilename, "timestamp_%06d.dat",mid);
-		
-			timestamp = fopen(tsfilename,"rb");
-			if (!timestamp) {
-            msgrintf(stderr, "Cannot open %s\n", tsfilename);
-            exit(0);
-			}
+
+			timestamp_t *timestampPtr = read_timestamp(mid);
 			
-			timestamp_t *ts = read_timestamp(timestamp); TODO Cassey's read message
-			if (timestampID > ts->timestampID){
+			if (timestampID > timestampPtr->timestampID){
 				first = mid + 1;
-				fclose(timestamp);
 			}
-			else if (timestampID > ts->timestampID){
+			else if (timestampID > timestampPtr->timestampID){
 				last = mid - 1;
-				fclose(timestamp);
 			}
 			else {
-				if (ts->hour == 8 || (ts-> hour ==9 && ts->minute == 0)){
+				if (timestampPtr->hour == 8 || (timestampPtr-> hour ==9 && timestampPtr->minute == 0)){
 					last = total_user_number;
 					first = 0;
 					
 					//find the userid so we can find the locationID
 					while (first <= last){
 						int mid = (first + last) /2;
-						spintf(userfilename, "user_%06d.dat",mid);
-					
-						userfile = fopen(userfilename,"rb");
-						if (!userfile) {
-						msgrintf(stderr, "Cannot open %s\n", tsfilename);
-						exit(0);
-						}
-						
-						user_t *up = read_user(userfile);
+												
+						user_t *userPtr = read_user(mid);
 
-						if (userID > up->userId){
+						if (userID > userPtr->userId){
 							first = mid + 1;
-							fclose(userfile);
 						}
-						else if (userID > up->userId){
+						else if (userID > userPtr->userId){
 							last = mid - 1;
-							fclose(userfile);
 						}
 						else {
-							if (userID == up->userId){
-								locationID = up->locationId;
+							if (userID == userPtr->userId){
+								locationID = userPtr->locationId;
 								
 								first = 0;
 								last = total_location_number;
 								
 								while (first <= last){
 									int mid = (first + last) /2;
-									spintf(locfilename, "location_%06d.dat",mid);
-								
-									locationfile = fopen(locfilename,"rb");
-									
-									if (!locationfile) {
-									msgrintf(stderr, "Cannot open %s\n", locfilename);
-									exit(0);
-									}
-									
-									location_t *lp = read_location(locationfile); 
-									if (locationID > lp->locationId){
+																		
+									location_t *locationPtr = read_location(mid);
+									if (locationID > locationPtr->locationId){
 										first = mid + 1;
-										fclose(locationfile);
 									}
-									else if (locationID < lp->locationId){
+									else if (locationID < locationPtr->locationId){
 										last = mid - 1;
-										fclose(locationfile);
 									}
 									else {
-										if (strcmp(lp->state, nebraska) == 0){
-											//TODO insert trippy michael hash function to see if user exists
+										if (strcmp(locationPtr->state, nebraska) == 0){
+											//TODO insert trippy michael function to increment a counter in a table of users that we will later go through to find the max user
 											count += 1;
 										}
-										fclose(locationfile);
-										}
+									}
 								}
 							}
-							fclose(userfile);
-							}
+						}
 					}
-				
-					//TODO insert function to store count for each user id 
 				}
-				fclose(timestamp);
-				}
+			}
 		}
-		
-    
-        /* free memory */
-        free_record(rp);
-    
-        /* close the file */
-        fclose(msg);
+        free_user(userPtr);
+		free_message(messagePtr);
+		free_timestamp(timestampPtr);
+		free_location(locationPtr);
     }    
-    
-	//TODO insert function to find maxID 
-    
-    printf("maxId is %d\n", maxId);
-	printf("maxcount is %d", maxCount);
+        
+    printf("count is %d", count);
     /* end time */
     gettimeofday(&time_end, NULL);
     
