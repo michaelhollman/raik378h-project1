@@ -32,18 +32,6 @@ int mid = 0;
     int total_message_number = atoi(argv[1]);
 	int total_timestamp_number = atoi(argv[2]);
 
-
-    char msgfilename[1024];
-	char tsfilename[1024];
-    FILE *msgfp = NULL;
-	FILE *tsfp = NULL;
-<<<<<<< Updated upstream
-
-
-=======
-	
-    
->>>>>>> Stashed changes
     struct timeval time_start, time_end;
 
     /* start time */

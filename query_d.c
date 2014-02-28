@@ -98,18 +98,19 @@ char nebraska[]  = "Nebraska";
 											//TODO insert trippy michael function to increment a counter in a table of users that we will later go through to find the max user
 											count += 1;
 										}
-									}
+									}			
+								free_location(locationPtr);
 								}
 							}
 						}
+						free_user(userPtr);
 					}
 				}
 			}
+			free_timestamp(timestampPtr);
 		}
-        free_user(userPtr);
 		free_message(messagePtr);
-		free_timestamp(timestampPtr);
-		free_location(locationPtr);
+
     }    
         
     printf("count is %d", count);
