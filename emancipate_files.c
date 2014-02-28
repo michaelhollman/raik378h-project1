@@ -42,6 +42,17 @@ int main(int argc, char **argv)
     printf("Removed %d state files\n", i);
     tot += i;
 
+    // MESSAGES
+    i=0;
+    sprintf(filename, "message_%08d.dat", i);
+    while (remove(filename) == 0)
+    {
+        i++;
+        sprintf(filename, "message_%08d.dat", i);
+    }
+    printf("Removed %d message files\n", i);
+    tot += i;
+    
     // DATESTAMPS
     i=0;
     sprintf(filename, "datestamp_%08d.dat", i);
@@ -62,17 +73,6 @@ int main(int argc, char **argv)
         sprintf(filename, "timestamp_%08d.dat", i);
     }
     printf("Removed %d timestamp files\n", i);
-    tot += i;
-
-    // MESSAGES
-    i=0;
-    sprintf(filename, "message_%08d.dat", i);
-    while (remove(filename) == 0)
-    {
-        i++;
-        sprintf(filename, "message_%08d.dat", i);
-    }
-    printf("Removed %d message files\n", i);
     tot += i;
     
     printf("Removed %lu files\n", tot);
