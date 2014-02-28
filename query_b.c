@@ -10,13 +10,13 @@
 
 int main(int argc, char **argv)
 {
-int i;
-int timeCount = 0;
-int timestampID = 0;
-int userID = 0;
-int last = 0;
-int first = 0;
-int mid = 0;
+    int i;
+    int timeCount = 0;
+    int timestampID = 0;
+    int userID = 0;
+    int last = 0;
+    int first = 0;
+    int mid = 0;
 
 
     /* print usage if needed */
@@ -41,6 +41,10 @@ int mid = 0;
 
 	for (i = 0; i < total_user_number; i ++){
 		validUser[i] = false;
+	}
+
+	for (i = 0; i < total_timestamp_number; i ++){
+		validTime[i] = false;
 	}
 
 	first = 0;
@@ -71,9 +75,6 @@ int mid = 0;
 		if (tsp->hour == 8 || (tsp-> hour ==9 && tsp->minute == 0)){
 			 validTime[i] = true;
 		}
-		else {
-			validTime[i] = false;
-		}
 		free_timestamp(tsp);
 
 	}
@@ -82,9 +83,6 @@ int mid = 0;
 		tsp = read_timestamp(i);
 		if (tsp->hour == 8 || (tsp-> hour ==9 && tsp->minute == 0)){
 			 validTime[i] = true;
-		}
-		else {
-			validTime[i] = false;
 		}
 		free_timestamp(tsp);
 	}
