@@ -93,9 +93,9 @@ void free_datestamp(datestamp_t *datestamp)
     free(datestamp);
 }
 
-int compare_datestamps(datestamp_t *a, datestamp_t *b)
+int compare_datestamps(const void *a, const void *b)
 {
-    return (hash_datestamp(a) - hash_datestamp(b));
+    return (hash_datestamp((datestamp_t *)a) - hash_datestamp((datestamp_t *)b));
 }
 
 unsigned long hash_datestamp(datestamp_t *datestamp){

@@ -89,13 +89,13 @@ void free_timestamp(timestamp_t *timestamp)
     free(timestamp);
 }
 
-int compare_timestamps(timestamp_t *a, timestamp_t *b)
+int compare_timestamps(const void *a, const void *b)
 {
-    return (hash_timestamp(a) - hash_timestamp(b));
+    return ((int)hash_timestamp((timestamp_t *)a) - (int)hash_timestamp((timestamp_t *)b));
 }
 
 unsigned long hash_timestamp(timestamp_t *timestamp){
     // HHMM
-    return ((unsigned long)(timestamp->hour) * 100) +
+    return (((unsigned long)timestamp->hour) * 100) +
            ((unsigned long)timestamp->minute);
 }

@@ -25,7 +25,7 @@ void write_datestamp(int fileNum, datestamp_t *datestamp);
 
 void free_datestamp(datestamp_t *datestamp);
 
-int compare_datestamps(datestamp_t *a, datestamp_t *b);
+int compare_datestamps(const void *a, const void *b);
 
 unsigned long hash_datestamp(datestamp_t *datestamp);
 

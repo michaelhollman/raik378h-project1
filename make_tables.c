@@ -262,7 +262,7 @@ int main(int argc, char **argv)
         // close the file
         fclose(fp);
         
-        if (i % 1000 == 0){
+        if ((i + 1) % 1000 == 0){
             printf("%d\n",i);
             printf("\t%-11s: %d\n","Users",userCount);
             printf("\t%-11s: %d\n","Cities",cityCount);

@@ -91,7 +91,7 @@ void free_state(state_t *state)
 
 int compare_states(const void *a, const void *b)
 {
-    return strcmp(((state_t*)a)->name, ((state_t*)b)->name);
+    return strcmp(((state_t *)a)->name, ((state_t *)b)->name);
 }
 
 unsigned long hash_state(state_t *state)
