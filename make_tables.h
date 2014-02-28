@@ -3,8 +3,10 @@
 
 #include "user.h"
 #include "message.h"
+#include "city.h"
+#include "state.h"
 #include "timestamp.h"
-#include "location.h"
+#include "datestamp.h"
 
 //typedef struct user_node {
 //    user_t user;
@@ -21,10 +23,19 @@ typedef struct timestamp_node {
     struct timestamp_node *next;
 } timestamp_node;
 
-typedef struct location_node {
-    location_t location;
-    struct location_node *next;
-} location_node;
+typedef struct datestamp_node {
+    datestamp_t datestamp;
+    struct datestamp_node *next;
+} datestamp_node;
 
+typedef struct city_node {
+    city_t city;
+    struct city_node *next;
+} city_node;
+
+typedef struct state_node {
+    state_t state;
+    struct state_node *next;
+} state_node;
 
 #endif

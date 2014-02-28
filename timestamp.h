@@ -11,9 +11,6 @@
 // timestamp
 typedef struct {
     int timestampId;
-    int year;
-    int month;
-    int day;
     int hour;
     int minute;
 } timestamp_t;

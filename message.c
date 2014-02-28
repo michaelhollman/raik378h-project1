@@ -9,6 +9,7 @@
 //        int messageId;
 //        int userId;
 //        int timestampId;
+//        int datestampId;
 //        char text[TEXT_SHORT];
 //    } message_t;
 
@@ -24,6 +25,7 @@ void print_message(message_t *message)
     printf("Message: %08d\n", message->messageId);
     printf("\t%-12s: %08d\n", "userId", message->userId);
     printf("\t%-12s: %08d\n", "timestampId", message->timestampId);
+    printf("\t%-12s: %08d\n", "datestampId", message->datestampId);
     printf("\t%-12s: %s\n", "text", message->text);
 }
 
@@ -48,6 +50,7 @@ message_t *read_message(int fileNum)
     fread(&(message->messageId), sizeof(int), 1, fp);
     fread(&(message->userId), sizeof(int), 1, fp);
     fread(&(message->timestampId), sizeof(int), 1, fp);
+    fread(&(message->datestampId), sizeof(int), 1, fp);
     fread(&(message->text[0]), sizeof(char), TEXT_LONG, fp);
     
     return message;
@@ -72,6 +75,7 @@ void write_message(int fileNum, message_t *message)
     fwrite(&(message->messageId), sizeof(int), 1, fp);
     fwrite(&(message->userId), sizeof(int), 1, fp);
     fwrite(&(message->timestampId), sizeof(int), 1, fp);
+    fwrite(&(message->datestampId), sizeof(int), 1, fp);
     fwrite(&(message->text[0]), sizeof(char), TEXT_LONG, fp);
     
     fclose(fp);

@@ -14,6 +14,7 @@ typedef struct {
     int messageId;
     int userId;
     int timestampId;
+    int datestampId;
     char text[TEXT_LONG];
 } message_t;
 

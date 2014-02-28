@@ -6,9 +6,6 @@
 // timestamp
 //    typedef struct {
 //        int timestampId;
-//        int year;
-//        int month;
-//        int day;
 //        int hour;
 //        int minute;
 //    } timestamp_t;
@@ -23,8 +20,7 @@ void print_timestamp(timestamp_t *timestamp)
     }
     
     printf("Timestamp: %08d\n", timestamp->timestampId);
-    printf("\tMM/DD/YYYY HH:MM: %02d/%02d/%04d %02d:%02d\n", timestamp->month, timestamp->day,
-           timestamp->year, timestamp->hour, timestamp->minute);
+    printf("\tHH:MM: %02d:%02d\n", timestamp->hour, timestamp->minute);
 }
 
 timestamp_t *read_timestamp(int fileNum)
@@ -47,15 +43,12 @@ timestamp_t *read_timestamp(int fileNum)
     
     // memory error
     if (timestamp == NULL) {
-        fprintf(stderr, "Cannot allocate memory for city.\n");
+        fprintf(stderr, "Cannot allocate memory for timestamp.\n");
         exit(0);
     }
     
     // read timestamp
     fread(&(timestamp->timestampId), sizeof(int), 1, fp);
-    fread(&(timestamp->year), sizeof(int), 1, fp);
-    fread(&(timestamp->month), sizeof(int), 1, fp);
-    fread(&(timestamp->day), sizeof(int), 1, fp);
     fread(&(timestamp->hour), sizeof(int), 1, fp);
     fread(&(timestamp->minute), sizeof(int), 1, fp);
     
@@ -79,9 +72,6 @@ void write_timestamp(int fileNum, timestamp_t *timestamp)
     
     // write user
     fwrite(&(timestamp->timestampId), sizeof(int), 1, fp);
-    fwrite(&(timestamp->year), sizeof(int), 1, fp);
-    fwrite(&(timestamp->month), sizeof(int), 1, fp);
-    fwrite(&(timestamp->day), sizeof(int), 1, fp);
     fwrite(&(timestamp->hour), sizeof(int), 1, fp);
     fwrite(&(timestamp->minute), sizeof(int), 1, fp);
     
@@ -103,10 +93,7 @@ int compare_timestamps(timestamp_t *a, timestamp_t *b)
 }
 
 unsigned long hash_timestamp(timestamp_t *timestamp){
-    // YYYYMMDDHHMM
-    return ((unsigned long)(timestamp->year)*100000000) +
-           ((unsigned long)(timestamp->month) * 1000000) +
-           ((unsigned long)(timestamp->day) * 10000) +
-           ((unsigned long)(timestamp->hour) * 100) +
+    // HHMM
+    return ((unsigned long)(timestamp->hour) * 100) +
            ((unsigned long)timestamp->minute);
 }

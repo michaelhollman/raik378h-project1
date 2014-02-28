@@ -6,7 +6,8 @@
 // user
 //    typedef struct {
 //        int userId;
-//        int locationId;
+//        int stateId;
+//        int cityId;
 //        char name[TEXT_SHORT];
 //    } user_t;
 
@@ -21,7 +22,8 @@ void print_user(user_t *user)
     
     printf("User: %08d\n", user->userId);
     printf("\t%-12s: %s\n", "name", user->name);
-    printf("\t%-12s: %08d\n", "locationId", user->locationId);
+    printf("\t%-12s: %08d\n", "cityId", user->cityId);
+    printf("\t%-12s: %08d\n", "stateId", user->stateId);
 }
 
 user_t *read_user(int fileNum)
@@ -49,7 +51,8 @@ user_t *read_user(int fileNum)
     }
     
     fread(&(user->userId), sizeof(int), 1, fp);
-    fread(&(user->locationId), sizeof(int), 1, fp);
+    fread(&(user->stateId), sizeof(int), 1, fp);
+    fread(&(user->cityId), sizeof(int), 1, fp);
     fread(&(user->name[0]), sizeof(char), TEXT_SHORT, fp);
     
     return user;
@@ -73,7 +76,8 @@ void write_user(int fileNum, user_t *user)
 
     // write user
     fwrite(&(user->userId), sizeof(int), 1, fp);
-    fwrite(&(user->locationId), sizeof(int), 1, fp);
+    fwrite(&(user->stateId), sizeof(int), 1, fp);
+    fwrite(&(user->cityId), sizeof(int), 1, fp);
     fwrite(&(user->name[0]), sizeof(char), TEXT_SHORT, fp);
     
     fclose(fp);

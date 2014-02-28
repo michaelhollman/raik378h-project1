@@ -8,8 +8,10 @@
 #include "record.h"
 #include "user.h"
 #include "message.h"
+#include "city.h"
+#include "state.h"
 #include "timestamp.h"
-#include "location.h"
+#include "datestamp.h"
 
 // arbitrary large prime number
 #define HASH_SIZE 1009
@@ -30,19 +32,29 @@ int main(int argc, char **argv)
     // set up some counters, etc.
     unsigned int recordCount = 0,
     userCount = 0,
-    locationCount = 0,
+    cityCount = 0,
+    stateCount = 0,
     timestampCount = 0,
+    datestampCount = 0,
     messageCount = 0,
     i,j,k;
     
     
-    // SET UP HASH TABLES FOR LOCATIONS AND TIMESTAMPS
-    // locations
-    location_node *locationHT[HASH_SIZE];
+    // SET UP HASH TABLES FOR CITIES, STATES, TIMESTAMPS, DATESTAMPS
+    // cities
+    city_node *cityHT[HASH_SIZE];
     for (i = 0; i < HASH_SIZE; i++)
     {
-        locationHT[i] = malloc(sizeof(location_node));
-        locationHT[i] = NULL;
+        cityHT[i] = malloc(sizeof(city_node));
+        cityHT[i] = NULL;
+    }
+    
+    // states
+    state_node *stateHT[HASH_SIZE];
+    for (i = 0; i < HASH_SIZE; i++)
+    {
+        stateHT[i] = malloc(sizeof(state_node));
+        stateHT[i] = NULL;
     }
     
     // timestamps
@@ -51,6 +63,14 @@ int main(int argc, char **argv)
     {
         timestampHT[i] = malloc(sizeof(timestamp_node));
         timestampHT[i] = NULL;
+    }
+    
+    // datestamps
+    datestamp_node *datestampHT[HASH_SIZE];
+    for (i = 0; i < HASH_SIZE; i++)
+    {
+        datestampHT[i] = malloc(sizeof(datestamp_node));
+        datestampHT[i] = NULL;
     }
     
     // LOOP OVER RECORD FILES
@@ -65,77 +85,103 @@ int main(int argc, char **argv)
             exit(0);
         }
         
-        //read the record from the file
+        // read the record from the file
         record_t *record = read_record(fp);
         
-//        printf("%s\n","just read record");
+        // split location into city and state, as best we can
+        char cityStr[TEXT_SHORT];
+        char stateStr[TEXT_SHORT];
         
-        
-        // create location
-        location_t location;
         // there's a few records where the location is \0, which strtok breaks on
         if (record->location[0] == '\0')
         {
-            strncpy(location.city, "", TEXT_SHORT);
-            strncpy(location.state, "", TEXT_SHORT);
+            strncpy(cityStr, "", TEXT_SHORT);
+            strncpy(stateStr, "", TEXT_SHORT);
         }
         else
         {
             char loc[TEXT_SHORT];
             strncpy(loc, record->location, TEXT_SHORT);
-            strncpy(location.city, strtok(loc, ","), TEXT_SHORT);
-            strncpy(location.state, strtok(NULL, ","), TEXT_SHORT);
-            
+            strncpy(cityStr, strtok(loc, ","), TEXT_SHORT);
+            strncpy(stateStr, strtok(NULL, ","), TEXT_SHORT);
         }
         
+        // create state
+        state_t state;
+        strncpy(state.name, stateStr, TEXT_SHORT);
         
-        
-        
-        // get locationId from hash if we have it already
-        unsigned int locationHash = hash_location(&location) % HASH_SIZE;
-        location_node *l;
-        int locId = -1;
-        for(l = locationHT[locationHash]; (l != NULL) && (locId != -1); l = l->next)
+        // get stateId from hash if we have it already
+        unsigned int stateHash = hash_state(&state) % HASH_SIZE;
+        state_node *s;
+        int stateId = -1;
+        for(s = stateHT[stateHash]; (s != NULL) && (stateId == -1); s = s->next)
         {
-            if (compare_locations(&location, &(l->location)) == 0)
+            if (compare_states(&state, &(s->state)) == 0)
             {
-//                printf("%s\n","found existing location");
-                locId = l->location.locationId;
+                //printf("State already found: %20s: %d\n", s->state.name, s->state.stateId);
+                stateId = s->state.stateId;
             }
         }
         
-        // assign locationId, add to hash table, and write file if we don't have it
-        if (locId == -1)
+        // assign stateId, add to hash table, and write file if we don't have it
+        if (stateId == -1)
         {
-//            printf("%s\n","trying to add location");
-            location.locationId = locationCount;
-            locId = locationCount;
-            write_location(locationCount, &location);
-            locationCount++;
+            state.stateId = stateCount;
+            stateId = stateCount;
+            write_state(stateCount, &state);
+            stateCount++;
             
-            l = malloc(sizeof(location_node));
-            l->location = location;
-            l->next = locationHT[locationHash];
-            locationHT[locationHash] = l;
-//            printf("%s\n","added location");
+            s = malloc(sizeof(state_node));
+            s->state = state;
+            s->next = stateHT[stateHash];
+            stateHT[stateHash] = s;
         }
+        
+        // create city
+        city_t city;
+        city.stateId = stateId;
+        strncpy(city.name, cityStr, TEXT_SHORT);
+        
+        // get cityId from hash if we have it already
+        unsigned int cityHash = hash_city(&city) % HASH_SIZE;
+        city_node *c;
+        int cityId = -1;
+        for(c = cityHT[cityHash]; (c != NULL) && (cityId == -1); c = c->next)
+        {
+            if (compare_cities(&city, &(c->city)) == 0)
+            {
+                //printf("City already found: %20s (%d): %d\n", c->city.name, c->city.stateId, c->city.cityId);
+                cityId = c->city.cityId;
+            }
+        }
+        
+        // assign cityId, add to hash table, and write file if we don't have it
+        if (cityId == -1)
+        {
+            city.cityId = cityCount;
+            cityId = cityCount;
+            write_city(cityCount, &city);
+            cityCount++;
+            
+            c = malloc(sizeof(city_node));
+            c->city = city;
+            c->next = cityHT[cityHash];
+            cityHT[cityHash] = c;
+        }
+        
         
         // create and write user
         user_t user;
         user.userId = record->id;
-        user.locationId = locId;
+        user.cityId = cityId;
         strncpy(user.name, record->name, TEXT_SHORT);
         write_user(userCount, &user);
         userCount++;
-        
         
         // loop over messages
         for(j = 0; j < record->message_num; j++) {
             // create timestamp
             timestamp_t timestamp;
-            timestamp.year = record->messages[j].year;
-            timestamp.month = record->messages[j].month;
-            timestamp.day = record->messages[j].day;
             timestamp.hour = record->messages[j].hour;
             timestamp.minute = record->messages[j].minute;
             
@@ -143,11 +189,11 @@ int main(int argc, char **argv)
             unsigned int timestampHash = hash_timestamp(&timestamp) % HASH_SIZE;
             timestamp_node *t;
             int tsId = -1;
-            for(t = timestampHT[timestampHash]; (t != NULL) && (tsId != -1); t = t->next)
+            for(t = timestampHT[timestampHash]; (t != NULL) && (tsId == -1); t = t->next)
             {
                 if (compare_timestamps(&timestamp, &(t->timestamp)) == 0)
                 {
-//                    printf("%s\n","found existing timestamp");
+                    //printf("Timestamp already found: %02d:%02d: %d\n", t->timestamp.hour, t->timestamp.minute, t->timestamp.timestampId);
                     tsId = t->timestamp.timestampId;
                 }
             }
@@ -155,7 +201,6 @@ int main(int argc, char **argv)
             // assign timestampId, add to hash table, and write file if we don't have it
             if (tsId == -1)
             {
-//                printf("%s\n","trying to add timestamp");
                 timestamp.timestampId = timestampCount;
                 tsId = timestampCount;
                 write_timestamp(timestampCount, &timestamp);
@@ -165,16 +210,46 @@ int main(int argc, char **argv)
                 t->timestamp = timestamp;
                 t->next = timestampHT[timestampHash];
                 timestampHT[timestampHash] = t;
-//                printf("%s\n","added timestamp");
             }
             
-            //print_timestamp(&timestamp);
+            // create datestamp
+            datestamp_t datestamp;
+            datestamp.year = record->messages[j].year;
+            datestamp.month = record->messages[j].month;
+            datestamp.day = record->messages[j].day;
             
+            // get datestampId from hash if we have it already
+            unsigned int datestampHash = hash_datestamp(&datestamp) % HASH_SIZE;
+            datestamp_node *d;
+            int dsId = -1;
+            for(d = datestampHT[datestampHash]; (d != NULL) && (dsId == -1); d = d->next)
+            {
+                if (compare_datestamps(&datestamp, &(d->datestamp)) == 0)
+                {
+                    //printf("Datestamp already found: %02d/%02d/%04d: %d\n", d->datestamp.month, d->datestamp.day, d->datestamp.year, d->datestamp.datestampId );
+                    dsId = d->datestamp.datestampId;
+                }
+            }
+            
+            // assign datestampId, add to hash table, and write file if we don't have it
+            if (dsId == -1)
+            {
+                datestamp.datestampId = datestampCount;
+                tsId = datestampCount;
+                write_datestamp(datestampCount, &datestamp);
+                datestampCount++;
+                
+                d = malloc(sizeof(datestamp_node));
+                d->datestamp = datestamp;
+                d->next = datestampHT[datestampHash];
+                datestampHT[datestampHash] = d;
+            }
             
             message_t message;
             strncpy(message.text, record->messages[j].text, TEXT_LONG);
             message.userId = user.userId;
             message.timestampId = tsId;
+            message.datestampId = dsId;
             message.messageId = messageCount;
             
             write_message(messageCount, &message);
@@ -188,21 +263,42 @@ int main(int argc, char **argv)
         // close the file
         fclose(fp);
         
-        if (i % 500 == 0){
+        if (i % 1000 == 0){
             printf("%d\n",i);
+            printf("\t%-11s: %d\n","Users",userCount);
+            printf("\t%-11s: %d\n","Cities",cityCount);
+            printf("\t%-11s: %d\n","States",stateCount);
+            printf("\t%-11s: %d\n","Messages",messageCount);
+            printf("\t%-11s: %d\n","Timestamps",timestampCount);
+            printf("\t%-11s: %d\n","Datestamps",datestampCount);
+            printf("\t%-11s: %d\n","Total",userCount + cityCount + stateCount + messageCount + timestampCount + datestampCount);
+            printf("\n");
         }
     }
     // done processing all files
     
-    // free location nodes
-    location_node *lNode;
+    // free city nodes
+    city_node *cNode;
     for (i = 0; i < HASH_SIZE; i++)
     {
-    	lNode = locationHT[i];
-    	while (lNode != NULL)
+    	cNode = cityHT[i];
+    	while (cNode != NULL)
     	{
-    		location_node* tmp = lNode;
-    		lNode = lNode->next;
+    		city_node* tmp = cNode;
+    		cNode = cNode->next;
+    		free (tmp);
+    	}
+    }
+    
+    // free state nodes
+    state_node *sNode;
+    for (i = 0; i < HASH_SIZE; i++)
+    {
+    	sNode = stateHT[i];
+    	while (sNode != NULL)
+    	{
+    		state_node* tmp = sNode;
+    		sNode = sNode->next;
     		free (tmp);
     	}
     }
@@ -220,17 +316,32 @@ int main(int argc, char **argv)
     	}
     }
     
+    // free datestamp nodes
+    datestamp_node *dNode;
+    for (i = 0; i < HASH_SIZE; i++)
+    {
+    	dNode = datestampHT[i];
+    	while (dNode != NULL)
+    	{
+    		datestamp_node* tmp = dNode;
+    		dNode = dNode->next;
+    		free (tmp);
+    	}
+    }
+    
     // end timing the program
     clock_t endTime = clock();
     double totaltime = (double)(endTime - startTime)/CLOCKS_PER_SEC;
-    printf("\nProcess time %f seconds\n\n", totaltime);
+    printf("\nProcess time %f seconds\n", totaltime);
     
     // stats
     printf("%-11s: %d\n","Users",userCount);
-    printf("%-11s: %d\n","Locations",locationCount);
+    printf("%-11s: %d\n","Cities",cityCount);
+    printf("%-11s: %d\n","States",stateCount);
     printf("%-11s: %d\n","Messages",messageCount);
     printf("%-11s: %d\n","Timestamps",timestampCount);
-    printf("%-11s: %d\n","Total",userCount + locationCount + messageCount + timestampCount);
+    printf("%-11s: %d\n","Datestamps",datestampCount);
+    printf("%-11s: %d\n","Total",userCount + cityCount + stateCount + messageCount + timestampCount + datestampCount);
     
     return 0;
 }

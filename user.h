@@ -11,7 +11,8 @@
 // user
 typedef struct {
     int userId;
-    int locationId;
+    int stateId;
+    int cityId;
     char name[TEXT_SHORT];
 } user_t;
 
