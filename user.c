@@ -88,10 +88,10 @@ void free_user(user_t *user)
     free(user);
 }
 
-int compare_users(user_t *a, user_t *b)
+int compare_users(const void *a, const void *b)
 {
     // we're provided unique user ids in original data
-    return (a->userId) - (b->userId);
+    return (int) ((user_t*)a) -> userId - ((user_t*)b) -> userId;
 }
 
 unsigned long hash_user(user_t *user)

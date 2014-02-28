@@ -90,12 +90,14 @@ void free_location(location_t *location)
     free(location);
 }
 
-int compare_locations(location_t *a, location_t *b)
+int compare_locations(const void *a, const void *b)
 {
-    // swap city/state to determine "sort by x, then by y" behavior
-    int c = strcmp(a->state, b->state);
+    
+    printf("%s, %s -- %s, %s", ((location_t*)a)->city, ((location_t*)a)->state, ((location_t*)b)->city, ((location_t*)b)->state );
+    
+    int c = strcmp(((location_t*)a)->state , ((location_t*)b)->state);
     if (c != 0) return c;
-    return strcmp(a->city, b->city);
+    return strcmp(((location_t*)a)->city, ((location_t*)b)->city);
 }
 
 unsigned long hash_location(location_t *location)
@@ -110,6 +112,9 @@ unsigned long hash_location(location_t *location)
         hash = ((hash << 5) + hash) + c;
     while ((c = *statestr++))
         hash = ((hash << 5) + hash) + c;
+    
+    printf("%s, %s: %lu", citystr, statestr, hash);
+    
     
     return hash;
 }

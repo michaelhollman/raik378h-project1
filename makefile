@@ -1,1 +1,2 @@
+make_tables: make_tables.c user.c message.c timestamp.c location.c record.c; gcc -o make_tables make_tables.c user.c message.c timestamp.c location.c record.c
 test: test.c user.c message.c timestamp.c location.c record.c; gcc -o test test.c user.c message.c timestamp.c location.c record.c

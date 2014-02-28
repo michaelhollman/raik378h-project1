@@ -1,5 +1,6 @@
 #include <string.h>
 #include <stdio.h>
+#include <string.h>
 
 #include "user.h"
 #include "message.h"
@@ -73,6 +74,19 @@ int main()
         printf("%lu\n", hash_timestamp(&timestamp));
         printf("%lu\n", hash_timestamp(readtimestamp));
     }
+    
+    
+    // location parsing
+    char loc[TEXT_SHORT];
+    strncpy(loc, NULL, TEXT_SHORT);
+    
+    char *city = strtok(loc, ",");
+    char *state = strtok(NULL, ",");
+    
+    printf("city: %s\n", city);
+    printf("state: %s\n", state);
+    printf("%s\n", loc);
+    
     
     return 0;
 }
