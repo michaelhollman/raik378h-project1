@@ -38,14 +38,14 @@ int main(int argc, char **argv)
 
     /* start time */
     gettimeofday(&time_start, NULL);
-	
+
 	/********* my code ********/
 	bool validId[total_location_number];
 	int j;
 	for(j = 0; j < total_location_number; j++){
 		validId[j] = false;
 	}
-	
+
 	last = total_location_number - 1;
 	while(first <= last){
 		mid = (first + last) / 2;
@@ -83,15 +83,15 @@ int main(int argc, char **argv)
 			free_location(locPnt);
 		}
 	}
-	
+
 	for(j = 0; j < total_user_number; j++){
 		user_t *user = read_user(j);
 		if(validId[user->locationId]){
 			nebraskaCount++;
 		}
-		free_location(user);
+		free_user(user);
 	}
-	
+
 	/********* end my code ********/
 
     printf("count is %d", nebraskaCount);

@@ -18,6 +18,7 @@ int main(int argc, char **argv)
     int mid;
     int first;
     int last;
+    int i;
     mid = 0;
     first = 0;
     last = 0;
@@ -40,14 +41,14 @@ int main(int argc, char **argv)
 
     /* start time */
     gettimeofday(&time_start, NULL);
-	
+
 	/********* my code ********/
 	bool validLocationId[total_location_number];
 	int j;
 	for(j = 0; j < total_location_number; j++){
 		validLocationId[j] = false;
 	}
-	
+
 	last = total_location_number - 1;
 	while(first <= last){
 		mid = (first + last) / 2;
@@ -85,7 +86,7 @@ int main(int argc, char **argv)
 			free_location(locPnt);
 		}
 	}
-	
+
 	bool validUserID[total_user_number];
 	for(j = 0; j < total_user_number; j++){
 		user_t *user = read_user(j);
@@ -95,9 +96,9 @@ int main(int argc, char **argv)
 		else{
 			validUserID[user->userId] = false;
 		}
-		free_location(user);
+		free_user(user);
 	}
-	
+
 	bool validTime[total_timestamp_number];
 	for (i = 0; i < total_timestamp_number; i ++){
 		validTime[i] = false;
@@ -146,8 +147,8 @@ int main(int argc, char **argv)
 		}
 		free_timestamp(tsp);
 	}
-	
-	
+
+
 	for(j = 0; j < total_message_number; j++){
 		message_t *message = read_message(j);
 		if(validTime[message->timestampId]){
@@ -155,10 +156,10 @@ int main(int argc, char **argv)
 				validUserID[message->userId]++;
 			}
 		}
-		free_location(message);
+		free_message(message);
 	}
-	
-	
+
+
 	for(j = 0; j < total_message_number; j++){
 		message_t *message = read_message(j);
 		if(validTime[message->timestampId]){
@@ -167,9 +168,9 @@ int main(int argc, char **argv)
 				validUserID[message->userId] = false;
 			}
 		}
-		free_location(message);
+		free_message(message);
 	}
-	
+
 	/********* end my code ********/
 
     printf("count is %d", count);
