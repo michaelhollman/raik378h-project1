@@ -53,6 +53,8 @@ message_t *read_message(int fileNum)
     fread(&(message->datestampId), sizeof(int), 1, fp);
     fread(&(message->text[0]), sizeof(char), TEXT_LONG, fp);
     
+    fclose(fp);
+
     return message;
 }
 

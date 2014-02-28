@@ -52,6 +52,8 @@ timestamp_t *read_timestamp(int fileNum)
     fread(&(timestamp->hour), sizeof(int), 1, fp);
     fread(&(timestamp->minute), sizeof(int), 1, fp);
     
+    fclose(fp);
+    
     return timestamp;
 }
 

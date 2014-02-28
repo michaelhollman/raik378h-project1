@@ -56,6 +56,8 @@ city_t *read_city(int fileNum)
     fread(&(city->stateId), sizeof(int), 1, fp);
     fread(&(city->name[0]), sizeof(char), TEXT_SHORT, fp);
     
+    fclose(fp);
+    
     return city;
 }
 

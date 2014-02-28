@@ -53,6 +53,8 @@ state_t *read_state(int fileNum)
     fread(&(state->stateId), sizeof(int), 1, fp);
     fread(&(state->name[0]), sizeof(char), TEXT_SHORT, fp);
     
+    fclose(fp);
+    
     return state;
 }
 

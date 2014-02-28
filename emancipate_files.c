@@ -41,7 +41,7 @@ int main(int argc, char **argv)
     }
     printf("Removed %d state files\n", i);
     tot += i;
-
+    
     // MESSAGES
     i=0;
     sprintf(filename, "message_%08d.dat", i);
@@ -63,7 +63,7 @@ int main(int argc, char **argv)
     }
     printf("Removed %d datestamp files\n", i);
     tot += i;
-
+    
     // TIMESTAMPS
     i=0;
     sprintf(filename, "timestamp_%08d.dat", i);

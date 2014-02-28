@@ -55,6 +55,8 @@ datestamp_t *read_datestamp(int fileNum)
     fread(&(datestamp->month), sizeof(int), 1, fp);
     fread(&(datestamp->day), sizeof(int), 1, fp);
     
+    fclose(fp);
+
     return datestamp;
 }
 

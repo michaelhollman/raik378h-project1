@@ -8,16 +8,6 @@
 #include "timestamp.h"
 #include "datestamp.h"
 
-//typedef struct user_node {
-//    user_t user;
-//    struct user_node *next;
-//} user_node;
-
-//typedef struct message_node {
-//    message_t message;
-//    struct message_node *next;
-//} message_node;
-
 typedef struct timestamp_node {
     timestamp_t timestamp;
     struct timestamp_node *next;
@@ -37,5 +27,16 @@ typedef struct state_node {
     state_t state;
     struct state_node *next;
 } state_node;
+
+
+//typedef struct user_node {
+//    user_t user;
+//    struct user_node *next;
+//} user_node;
+
+//typedef struct message_node {
+//    message_t message;
+//    struct message_node *next;
+//} message_node;
 
 #endif

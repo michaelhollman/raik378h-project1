@@ -55,6 +55,8 @@ user_t *read_user(int fileNum)
     fread(&(user->cityId), sizeof(int), 1, fp);
     fread(&(user->name[0]), sizeof(char), TEXT_SHORT, fp);
     
+    fclose(fp);
+    
     return user;
 }
 

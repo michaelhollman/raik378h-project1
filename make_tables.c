@@ -12,6 +12,7 @@
 #include "state.h"
 #include "timestamp.h"
 #include "datestamp.h"
+#include "file_count.h"
 
 // arbitrary large prime number
 #define HASH_SIZE 1009
@@ -329,19 +330,23 @@ int main(int argc, char **argv)
     	}
     }
     
+    file_count_t fc;
+    fc.users = userCount;
+    fc.cities = cityCount;
+    fc.states = stateCount;
+    fc.messages = messageCount;
+    fc.timestamps = timestampCount;
+    fc.datestamps = datestampCount;
+    
+    write_file_count(&fc);
+    print_file_count(&fc);
+    
     // end timing the program
     clock_t endTime = clock();
     double totaltime = (double)(endTime - startTime)/CLOCKS_PER_SEC;
     printf("\nProcess time %f seconds\n", totaltime);
     
-    // stats
-    printf("%-11s: %d\n","Users",userCount);
-    printf("%-11s: %d\n","Cities",cityCount);
-    printf("%-11s: %d\n","States",stateCount);
-    printf("%-11s: %d\n","Messages",messageCount);
-    printf("%-11s: %d\n","Timestamps",timestampCount);
-    printf("%-11s: %d\n","Datestamps",datestampCount);
-    printf("%-11s: %d\n","Total",userCount + cityCount + stateCount + messageCount + timestampCount + datestampCount);
+    
     
     return 0;
 }
