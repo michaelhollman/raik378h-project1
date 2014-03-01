@@ -22,6 +22,8 @@ int main(int argc, char **argv)
 
 int sort_tables()
 {
+    printf("Sorting tables starting\n");
+
     // time the program
     clock_t startTime = clock();
     struct timeval sysTimeStart, sysTimeEnd;
@@ -55,7 +57,9 @@ int sort_tables()
         // read
         for (i = 0; i < count; i++)
         {
-            states[i] = *read_state(i);
+            state_t *tmp = read_state(i);
+            states[i] = *tmp;
+            free_state(tmp);
         }
         
         // sort
@@ -95,7 +99,9 @@ int sort_tables()
         // read
         for (i = 0; i < count; i++)
         {
-            cities[i] = *read_city(i);
+            city_t *tmp = read_city(i);
+            cities[i] = *tmp;
+            free_city(tmp);
         }
         
         // sort
@@ -138,7 +144,9 @@ int sort_tables()
         // read
         for (i = 0; i < count; i++)
         {
-            timestamps[i] = *read_timestamp(i);
+            timestamp_t *tmp = read_timestamp(i);
+            timestamps[i] = *tmp;
+            free_timestamp(tmp);
         }
         
         // sort
@@ -178,7 +186,9 @@ int sort_tables()
         // read
         for (i = 0; i < count; i++)
         {
-            datestamps[i] = *read_datestamp(i);
+            datestamp_t *tmp = read_datestamp(i);
+            datestamps[i] = *tmp;
+            free_datestamp(tmp);
         }
         
         // sort

@@ -36,7 +36,7 @@ file_count_t *read_file_count()
     FILE *fp;
     fp = fopen("file_count.dat", "rb");
     if (!fp) {
-        printf("Unable to open file.");
+        printf("Unable to open file_count. Make sure you run make_tables first!");
         exit(0);
     }
     
