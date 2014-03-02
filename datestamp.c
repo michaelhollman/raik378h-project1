@@ -1,5 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <sys/stat.h>
+#include <sys/types.h>
 
 #include "datestamp.h"
 
@@ -30,7 +32,7 @@ datestamp_t *read_datestamp(int fileNum)
     // set up file
     FILE *fp;
     char filename[1024];
-    sprintf(filename, "datestamp_%08d.dat", fileNum);
+    sprintf(filename, "datestamps/datestamp_%08d.dat", fileNum);
     
     // open file
     fp = fopen(filename, "rb");
@@ -63,9 +65,10 @@ datestamp_t *read_datestamp(int fileNum)
 void write_datestamp(int fileNum, datestamp_t *datestamp)
 {
     // set up file
+    mkdir("datestamps", 0777);
     FILE *fp;
     char filename[1024];
-    sprintf(filename, "datestamp_%08d.dat", fileNum);
+    sprintf(filename, "datestamps/datestamp_%08d.dat", fileNum);
     
     // open file
     fp = fopen(filename, "wb");

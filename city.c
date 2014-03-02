@@ -2,6 +2,8 @@
 #include <stdlib.h>
 #include <string.h>
 #include <math.h>
+#include <sys/stat.h>
+#include <sys/types.h>
 
 #include "city.h"
 
@@ -32,7 +34,7 @@ city_t *read_city(int fileNum)
     // set up file
     FILE *fp;
     char filename[1024];
-    sprintf(filename, "city_%08d.dat", fileNum);
+    sprintf(filename, "cities/city_%08d.dat", fileNum);
     
     // open file
     fp = fopen(filename, "rb");
@@ -64,9 +66,10 @@ city_t *read_city(int fileNum)
 void write_city(int fileNum, city_t *city)
 {
     // set up file
+    mkdir("cities", 0777);
     FILE *fp;
     char filename[1024];
-    sprintf(filename, "city_%08d.dat", fileNum);
+    sprintf(filename, "cities/city_%08d.dat", fileNum);
     
     // open file
     fp = fopen(filename, "wb");

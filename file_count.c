@@ -36,7 +36,7 @@ file_count_t *read_file_count()
     FILE *fp;
     fp = fopen("file_count.dat", "rb");
     if (!fp) {
-        printf("Unable to open file_count. Make sure you run make_tables first!");
+        printf("Unable to open file_count.dat. Make sure you run make_tables first!\n");
         exit(0);
     }
     
@@ -68,7 +68,7 @@ void write_file_count(file_count_t *fc)
     FILE *fp;
     fp = fopen("file_count.dat", "wb");
     if (!fp) {
-        printf("Unable to open file.");
+        printf("Unable to open file_count.dat for writing.\n");
         exit(0);
     }
     

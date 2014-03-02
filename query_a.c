@@ -5,13 +5,8 @@
 #include <string.h>
 #include <stdbool.h>
 
-#include "record.h"
 #include "user.h"
-#include "message.h"
-#include "city.h"
 #include "state.h"
-#include "timestamp.h"
-#include "datestamp.h"
 #include "file_count.h"
 
 int main(int argc, char **argv)
@@ -22,15 +17,16 @@ int main(int argc, char **argv)
     gettimeofday(&sysTimeStart, NULL);
     
     // counters, etc.
-    int nebraskaUserCount = 0,
-        nebraskaStateId = -1,
-        first, mid, last, j;
+    int first, mid, last, j,
+        nebraskaUserCount = 0,
+        nebraskaStateId = -1;
     char nebraskaStr[] = "Nebraska";
     
     // get file counts
     file_count_t *fc = read_file_count();
     int userCount = fc->users;
     int stateCount = fc->states;
+    free_file_count(fc);
     
     // binary search states to get Nebraska's ID
 	first = 0;

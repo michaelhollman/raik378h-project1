@@ -1,6 +1,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdbool.h>
+#include <sys/stat.h>
+#include <sys/types.h>
 
 #include "message.h"
 
@@ -34,7 +36,7 @@ message_t *read_message(int fileNum)
     // set up file
     FILE *fp;
     char filename[1024];
-    sprintf(filename, "message_%08d.dat", fileNum);
+    sprintf(filename, "messages/message_%08d.dat", fileNum);
     
     // open file
     fp = fopen(filename, "rb");
@@ -61,9 +63,10 @@ message_t *read_message(int fileNum)
 void write_message(int fileNum, message_t *message)
 {
     // set up file
+    mkdir("messages", 0777);
     FILE *fp;
     char filename[1024];
-    sprintf(filename, "message_%08d.dat", fileNum);
+    sprintf(filename, "messages/message_%08d.dat", fileNum);
     
     // open file
     fp = fopen(filename, "wb");

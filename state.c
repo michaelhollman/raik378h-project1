@@ -2,6 +2,8 @@
 #include <stdlib.h>
 #include <string.h>
 #include <math.h>
+#include <sys/stat.h>
+#include <sys/types.h>
 
 #include "state.h"
 
@@ -30,7 +32,7 @@ state_t *read_state(int fileNum)
     // set up file
     FILE *fp;
     char filename[1024];
-    sprintf(filename, "state_%08d.dat", fileNum);
+    sprintf(filename, "states/state_%08d.dat", fileNum);
     
     // open file
     fp = fopen(filename, "rb");
@@ -61,9 +63,10 @@ state_t *read_state(int fileNum)
 void write_state(int fileNum, state_t *state)
 {
     // set up file
+    mkdir("states", 0777);
     FILE *fp;
     char filename[1024];
-    sprintf(filename, "state_%08d.dat", fileNum);
+    sprintf(filename, "states/state_%08d.dat", fileNum);
     
     // open file
     fp = fopen(filename, "wb");

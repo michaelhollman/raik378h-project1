@@ -237,7 +237,7 @@ int main(int argc, char **argv)
             if (dsId == -1)
             {
                 datestamp.datestampId = datestampCount;
-                tsId = datestampCount;
+                dsId = datestampCount;
                 write_datestamp(datestampCount, &datestamp);
                 datestampCount++;
                 
@@ -263,15 +263,14 @@ int main(int argc, char **argv)
         // close the file
         fclose(fp);
         
-        if ((i + 1) % 1000 == 0){
-            printf("%d\n",i);
-            printf("\t%-11s: %d\n","Users",userCount);
-            printf("\t%-11s: %d\n","Cities",cityCount);
-            printf("\t%-11s: %d\n","States",stateCount);
-            printf("\t%-11s: %d\n","Messages",messageCount);
-            printf("\t%-11s: %d\n","Timestamps",timestampCount);
-            printf("\t%-11s: %d\n","Datestamps",datestampCount);
-            printf("\t%-11s: %d\n","Total",userCount + cityCount + stateCount + messageCount + timestampCount + datestampCount);
+        if ((i + 1) % 2000 == 0){
+            printf("%-11s: %d\n","Users",userCount);
+            printf("%-11s: %d\n","Cities",cityCount);
+            printf("%-11s: %d\n","States",stateCount);
+            printf("%-11s: %d\n","Messages",messageCount);
+            printf("%-11s: %d\n","Timestamps",timestampCount);
+            printf("%-11s: %d\n","Datestamps",datestampCount);
+            printf("%-11s: %d\n","Total",userCount + cityCount + stateCount + messageCount + timestampCount + datestampCount);
             printf("\n");
         }
     }
