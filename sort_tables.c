@@ -22,7 +22,7 @@ int main(int argc, char **argv)
 
 int sort_tables()
 {
-    printf("Sorting tables starting\n");
+    printf("Sorting tables starting...\n");
 
     // time the program
     clock_t startTime = clock();

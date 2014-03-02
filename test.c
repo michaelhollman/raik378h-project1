@@ -12,9 +12,20 @@
 
 int main()
 {
+    
+
+    
     file_count_t *fc = read_file_count();
+    int states = fc->states;
     print_file_count(fc);
     free_file_count(fc);
+    
+    for (int i = 0; i<states; i++)
+    {
+        state_t *s = read_state(i);
+        print_state(s);
+        free_state(s);
+    }
     
     
     // user

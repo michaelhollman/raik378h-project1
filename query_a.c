@@ -1,110 +1,84 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <sys/time.h>
+#include <time.h>
 #include <string.h>
 #include <stdbool.h>
 
 #include "record.h"
 #include "user.h"
 #include "message.h"
-#include "location.h"
+#include "city.h"
+#include "state.h"
 #include "timestamp.h"
+#include "datestamp.h"
+#include "file_count.h"
 
 int main(int argc, char **argv)
 {
-    int nebraskaCount;
-    nebraskaCount = 0;
-    int locationID;
-    int mid;
-    int first;
-    int last;
-    mid = 0;
-    first = 0;
-    last = 0;
-    locationID = 0;
-    char nebraska[]  = "Nebraska";
-
-    /* print usage if needed */
-    if (argc != 3) {
-        fprintf(stderr, "Usage: %s total_user_number total_location_number\n", argv[0]);
-        exit(0);
-    }
-
-    /* get total record number */
-    int total_user_number = atoi(argv[1]);
-    int total_location_number = atoi(argv[2]);
-
-    struct timeval time_start, time_end;
-
-    /* start time */
-    gettimeofday(&time_start, NULL);
-
-	/********* my code ********/
-	bool validId[total_location_number];
-	int j;
-	for(j = 0; j < total_location_number; j++){
-		validId[j] = false;
-	}
-
-	last = total_location_number - 1;
-	while(first <= last){
+    // time the program
+    clock_t startTime = clock();
+    struct timeval sysTimeStart, sysTimeEnd;
+    gettimeofday(&sysTimeStart, NULL);
+    
+    // counters, etc.
+    int nebraskaUserCount = 0,
+        nebraskaStateId = -1,
+        first, mid, last, j;
+    char nebraskaStr[] = "Nebraska";
+    
+    // get file counts
+    file_count_t *fc = read_file_count();
+    int userCount = fc->users;
+    int stateCount = fc->states;
+    
+    // binary search states to get Nebraska's ID
+	first = 0;
+    last = stateCount - 1;
+	while (first <= last && nebraskaStateId == -1)
+    {
 		mid = (first + last) / 2;
-		location_t *locPnt = read_location(mid);
-		if(strcmp(locPnt->state, nebraska) == 0){
-			validId[mid] = true;
-			free_location(locPnt);
-			for(j = mid - 1; j >= first; j--){
-				locPnt = read_location(j);
-				if(strcmp(locPnt->state, nebraska) == 0){
-					validId[j] = true;
-				}
-				else{
-					j = -1; //breaks the loop
-				}
-				free_location(locPnt);
-			}
-			for(j = mid + 1; j <= last; j++){
-				locPnt = read_location(j);
-				if(strcmp(locPnt->state, nebraska) == 0){
-					validId[j] = true;
-				}
-				else{
-					j = last + 1; //breaks the loop
-				}
-				free_location(locPnt);
-			}
-			last = first -1;
+		state_t *state = read_state(mid);
+        
+        
+		if (strcmp(state->name, nebraskaStr) == 0)
+        {
+            nebraskaStateId = state->stateId;
 		}
-		else if(strcmp(locPnt->state, nebraska) < 0){
+		else if (strcmp(state->name, nebraskaStr) < 0)
+        {
 			first = mid + 1;
-			free_location(locPnt);
 		}
-		else{
+		else
+        {
 			last = mid - 1;
-			free_location(locPnt);
 		}
+        
+        free_state(state);
 	}
-
-	for(j = 0; j < total_user_number; j++){
+    
+    // note, if we didn't find Nebraska, nebraskaStateId = -1
+    
+	for (j = 0; j < userCount; j++)
+    {
 		user_t *user = read_user(j);
-		if(validId[user->locationId]){
-			nebraskaCount++;
-		}
+        if (user->stateId == nebraskaStateId)
+        {
+            nebraskaUserCount++;
+        }
 		free_user(user);
 	}
-
-	/********* end my code ********/
-
-    printf("count is %d", nebraskaCount);
-    /* end time */
-    gettimeofday(&time_end, NULL);
-
-    float totaltime = (time_end.tv_sec - time_start.tv_sec)
-                    + (time_end.tv_usec - time_start.tv_usec) / 1000000.0f;
-
-
-
-    printf("\n\nProcess time %f seconds\n", totaltime);
-
+    
+    printf("Found %d users from %s (state id %d)\n", nebraskaUserCount, nebraskaStr, nebraskaStateId);
+    
+    // end timing the program
+    clock_t endTime = clock();
+    double totaltime = (double)(endTime - startTime)/CLOCKS_PER_SEC;
+    printf("\nProcess time %f seconds (time.h)\n", totaltime);
+    gettimeofday(&sysTimeEnd, NULL);
+    float totaltime2 = (sysTimeEnd.tv_sec - sysTimeStart.tv_sec)
+    + (sysTimeEnd.tv_usec - sysTimeStart.tv_usec) / 1000000.0f;
+    printf("Process time %f seconds (sys/time.h)\n", totaltime2);
+    
     return 0;
 }

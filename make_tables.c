@@ -83,7 +83,7 @@ int main(int argc, char **argv)
         fp = fopen(filename,"rb");
         if (!fp) {
             fprintf(stderr, "Cannot open %s\n", filename);
-            exit(0);
+            continue;
         }
         
         // read the record from the file
@@ -175,6 +175,7 @@ int main(int argc, char **argv)
         user_t user;
         user.userId = record->id;
         user.cityId = cityId;
+        user.stateId = stateId;
         strncpy(user.name, record->name, TEXT_SHORT);
         write_user(userCount, &user);
         userCount++;
