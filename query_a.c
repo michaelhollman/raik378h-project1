@@ -17,9 +17,9 @@ int main(int argc, char **argv)
     gettimeofday(&sysTimeStart, NULL);
     
     // counters, etc.
-    int first, mid, last, j,
+    int first, mid, last, i,
         nebraskaUserCount = 0,
-        nebraskaStateId = -1;
+        nebraskaStateId;
     char nebraskaStr[] = "Nebraska";
     
     // get file counts
@@ -31,11 +31,11 @@ int main(int argc, char **argv)
     // binary search states to get Nebraska's ID
 	first = 0;
     last = stateCount - 1;
+    nebraskaStateId = -1;
 	while (first <= last && nebraskaStateId == -1)
     {
 		mid = (first + last) / 2;
 		state_t *state = read_state(mid);
-        
         
 		if (strcmp(state->name, nebraskaStr) == 0)
         {
@@ -55,9 +55,9 @@ int main(int argc, char **argv)
     
     // note, if we didn't find Nebraska, nebraskaStateId = -1
     
-	for (j = 0; j < userCount; j++)
+	for (i = 0; i < userCount; i++)
     {
-		user_t *user = read_user(j);
+		user_t *user = read_user(i);
         if (user->stateId == nebraskaStateId)
         {
             nebraskaUserCount++;

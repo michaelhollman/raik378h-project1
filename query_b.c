@@ -32,12 +32,10 @@ int main(int argc, char **argv)
     // arrays to keep track of valid times and counted users
 	bool validTimes[timestampCount];
 	bool countedUsers[userCount];
-
 	for (i = 0; i < timestampCount; i ++)
     {
 		validTimes[i] = false;
 	}
-    
 	for (i = 0; i < userCount; i ++)
     {
 		countedUsers[i] = false;
