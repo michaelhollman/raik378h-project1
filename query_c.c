@@ -17,28 +17,10 @@ int main(int argc, char **argv)
     struct timeval sysTimeStart, sysTimeEnd;
     gettimeofday(&sysTimeStart, NULL);
     
-    
-    //    int count;
-    //    count = 0;
-    //    int locationID;
-    //    int mid;
-    //    int first;
-    //    int last;
-    //    int i;
-    //    mid = 0;
-    //    first = 0;
-    //    last = 0;
-    //    locationID = 0;
-    //    char nebraska[]  = "Nebraska";
-    
-    
-    
     int nebraskaStateId, first, last, mid, i,
     finalCount = 0;
     char nebraskaStr[]  = "Nebraska";
-    
-    
-    
+
     // get file counts
     file_count_t *fc = read_file_count();
     int userCount = fc->users;
@@ -81,47 +63,6 @@ int main(int argc, char **argv)
         free_state(state);
 	}
     
-    
-    //	last = stateCount - 1;
-    //	while(first <= last){
-    //		mid = (first + last) / 2;
-    //		location_t *locPnt = read_location(mid);
-    //		if(strcmp(locPnt->state, nebraska) == 0){
-    //			validLocationId[mid] = true;
-    //			free_location(locPnt);
-    //			for(j = mid - 1; j >= first; j--){
-    //				locPnt = read_location(j);
-    //				if(strcmp(locPnt->state, nebraska) == 0){
-    //					validLocationId[j] = true;
-    //				}
-    //				else{
-    //					j = -1; //breaks the loop
-    //				}
-    //				free_location(locPnt);
-    //			}
-    //			for(j = mid + 1; j <= last; j++){
-    //				locPnt = read_location(j);
-    //				if(strcmp(locPnt->state, nebraska) == 0){
-    //					validLocationId[j] = true;
-    //				}
-    //				else{
-    //					j = last + 1; //breaks the loop
-    //				}
-    //				free_location(locPnt);
-    //			}
-    //			last = first -1;
-    //		}
-    //		else if(strcmp(locPnt->state, nebraska) < 0){
-    //			first = mid + 1;
-    //			free_location(locPnt);
-    //		}
-    //		else{
-    //			last = mid - 1;
-    //			free_location(locPnt);
-    //		}
-    //	}
-    
-    
     // mark all users from Nebraska as valid, else invalid
     for (i = 0; i < userCount; i++)
     {
@@ -129,19 +70,6 @@ int main(int argc, char **argv)
         validUsers[user->userId] = (user->stateId == nebraskaStateId);
         free_user(user);
 	}
-    
-    
-    //	bool validUserID[userCount];
-    //	for(j = 0; j < userCount; j++){
-    //		user_t *user = read_user(j);
-    //		if(validLocationId[user->locationId]){
-    //			validUserID[user->userId] = true;
-    //		}
-    //		else{
-    //			validUserID[user->userId] = false;
-    //		}
-    //		free_user(user);
-    //	}
     
     // binary search for a valid timestamp
 	first = 0;
@@ -167,7 +95,6 @@ int main(int argc, char **argv)
 		free_timestamp(tsp);
 	}
     
-    
     // mark valid times above and below as valid
     int direction = 1;
     bool done = false;
@@ -189,59 +116,7 @@ int main(int argc, char **argv)
 		}
         free_timestamp(tsp);
 	}
-    
-    
-    
-    //	bool validTime[timestampCount];
-    //	for (i = 0; i < timestampCount; i ++){
-    //		validTime[i] = false;
-    //	}
-    //
-    //	first = 0;
-    //	last = timestampCount;
-    //	timestamp_t *tsp;
-    //
-    //	while (first <= last){
-    //		mid = (first + last) /2;
-    //		tsp = read_timestamp(mid);
-    //
-    //		if (tsp->hour < 8){
-    //			first = mid + 1;
-    //		}
-    //		else if (tsp->hour > 9 || tsp->hour ==9 && tsp-> minute > 0 ){
-    //			last = mid - 1;
-    //		}
-    //		else {
-    //			first = last + 1;
-    //		}
-    //		free_timestamp(tsp);
-    //	}
-    
-    
-    //	for (i = mid; i < timestampCount; i++){
-    //		tsp = read_timestamp(i);
-    //		if (tsp->hour == 8 || (tsp-> hour ==9 && tsp->minute == 0)){
-    //			 validTime[i] = true;
-    //		}
-    //		else{
-    //            i = timestampCount;
-    //		}
-    //		free_timestamp(tsp);
-    //
-    //	}
-    //
-    //	for (i = mid-1; i >= 0; i--){
-    //		tsp = read_timestamp(i);
-    //		if (tsp->hour == 8 || (tsp-> hour ==9 && tsp->minute == 0)){
-    //			 validTime[i] = true;
-    //		}
-    //		else{
-    //            i = -1;
-    //		}
-    //		free_timestamp(tsp);
-    //	}
-    
-    
+     
     // loop through all messages
 	for(i = 0; i < messageCount; i++)
     {
