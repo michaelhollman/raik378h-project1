@@ -12,7 +12,6 @@
 //    int datestamps;
 //} file_count_t;
 
-
 void print_file_count(file_count_t *fc)
 {
     if (fc == NULL) {

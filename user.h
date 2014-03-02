@@ -7,7 +7,6 @@
 #define TEXT_SHORT      64
 #define TEXT_LONG       1024
 
-
 // user
 typedef struct {
     int userId;
@@ -15,7 +14,6 @@ typedef struct {
     int cityId;
     char name[TEXT_SHORT];
 } user_t;
-
 
 void print_user(user_t *user);
 

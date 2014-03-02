@@ -7,14 +7,12 @@
 #define TEXT_SHORT      64
 #define TEXT_LONG       1024
 
-
 // city
 typedef struct {
     int cityId;
     int stateId;
     char name[TEXT_SHORT];
 } city_t;
-
 
 void print_city(city_t *city);
 

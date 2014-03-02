@@ -13,7 +13,6 @@
 //        char name[TEXT_SHORT];
 //    } user_t;
 
-
 void print_user(user_t *user)
 {
     // user cannot be NULL

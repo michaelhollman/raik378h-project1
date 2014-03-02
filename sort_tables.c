@@ -1,6 +1,5 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include <time.h>
 #include <string.h>
 #include <stdbool.h>
 #include <sys/time.h>
@@ -25,7 +24,6 @@ int sort_tables()
     printf("Sorting tables starting...\n");
 
     // time the program
-    clock_t startTime = clock();
     struct timeval sysTimeStart, sysTimeEnd;
     gettimeofday(&sysTimeStart, NULL);
     
@@ -46,7 +44,6 @@ int sort_tables()
         printf("Sorting %d sates\n", fc->states);
         
         // time this section
-        clock_t startTimeSub = clock();
         struct timeval startSysTimeSub, endSysTimeSub;
         gettimeofday(&startSysTimeSub, NULL);
         
@@ -73,13 +70,10 @@ int sort_tables()
         }
         
         // end timing this section
-        clock_t endTimeSub = clock();
-        double totaltime = (double)(endTimeSub - startTimeSub)/CLOCKS_PER_SEC;
-        printf("Table process time %f seconds (time.h)\n", totaltime);
         gettimeofday(&endSysTimeSub, NULL);
-        float totaltime2 = (endSysTimeSub.tv_sec - startSysTimeSub.tv_sec)
+        float totalTime = (endSysTimeSub.tv_sec - startSysTimeSub.tv_sec)
         + (endSysTimeSub.tv_usec - startSysTimeSub.tv_usec) / 1000000.0f;
-        printf("Table process time %f seconds (sys/time.h)\n", totaltime2);
+        printf("Table process time %f seconds\n", totalTime);
     }
     
     // cities
@@ -88,7 +82,6 @@ int sort_tables()
         printf("Sorting %d cities\n", fc->cities);
         
         // time this section
-        clock_t startTimeSub = clock();
         struct timeval startSysTimeSub, endSysTimeSub;
         gettimeofday(&startSysTimeSub, NULL);
         
@@ -115,13 +108,10 @@ int sort_tables()
         }
         
         // end timing this section
-        clock_t endTimeSub = clock();
-        double totaltime = (double)(endTimeSub - startTimeSub)/CLOCKS_PER_SEC;
-        printf("Table process time %f seconds (time.h)\n", totaltime);
         gettimeofday(&endSysTimeSub, NULL);
-        float totaltime2 = (endSysTimeSub.tv_sec - startSysTimeSub.tv_sec)
+        float totalTime = (endSysTimeSub.tv_sec - startSysTimeSub.tv_sec)
         + (endSysTimeSub.tv_usec - startSysTimeSub.tv_usec) / 1000000.0f;
-        printf("Table process time %f seconds (sys/time.h)\n", totaltime2);
+        printf("Table process time %f seconds\n", totalTime);
     }
     
     // messages
@@ -133,7 +123,6 @@ int sort_tables()
         printf("Sorting %d timestamps\n", fc->timestamps);
         
         // time this section
-        clock_t startTimeSub = clock();
         struct timeval startSysTimeSub, endSysTimeSub;
         gettimeofday(&startSysTimeSub, NULL);
         
@@ -160,13 +149,10 @@ int sort_tables()
         }
         
         // end timing this section
-        clock_t endTimeSub = clock();
-        double totaltime = (double)(endTimeSub - startTimeSub)/CLOCKS_PER_SEC;
-        printf("Table process time %f seconds (time.h)\n", totaltime);
         gettimeofday(&endSysTimeSub, NULL);
-        float totaltime2 = (endSysTimeSub.tv_sec - startSysTimeSub.tv_sec)
+        float totalTime = (endSysTimeSub.tv_sec - startSysTimeSub.tv_sec)
         + (endSysTimeSub.tv_usec - startSysTimeSub.tv_usec) / 1000000.0f;
-        printf("Table process time %f seconds (sys/time.h)\n", totaltime2);
+        printf("Table process time %f seconds\n", totalTime);
     }
     
     // datestamps
@@ -175,7 +161,6 @@ int sort_tables()
         printf("Sorting %d datestamps\n", fc->datestamps);
         
         // time this section
-        clock_t startTimeSub = clock();
         struct timeval startSysTimeSub, endSysTimeSub;
         gettimeofday(&startSysTimeSub, NULL);
         
@@ -202,25 +187,19 @@ int sort_tables()
         }
         
         // end timing this section
-        clock_t endTimeSub = clock();
-        double totaltime = (double)(endTimeSub - startTimeSub)/CLOCKS_PER_SEC;
-        printf("Table process time %f seconds (time.h)\n", totaltime);
         gettimeofday(&endSysTimeSub, NULL);
-        float totaltime2 = (endSysTimeSub.tv_sec - startSysTimeSub.tv_sec)
+        float totalTime = (endSysTimeSub.tv_sec - startSysTimeSub.tv_sec)
         + (endSysTimeSub.tv_usec - startSysTimeSub.tv_usec) / 1000000.0f;
-        printf("Table process time %f seconds (sys/time.h)\n", totaltime2);
+        printf("Table process time %f seconds\n", totalTime);
     }
     
     free_file_count(fc);
     
     // end timing the program
-    clock_t endTime = clock();
-    double totaltime = (double)(endTime - startTime)/CLOCKS_PER_SEC;
-    printf("\nProcess time %f seconds (time.h)\n", totaltime);
     gettimeofday(&sysTimeEnd, NULL);
-    float totaltime2 = (sysTimeEnd.tv_sec - sysTimeStart.tv_sec)
+    float totalTime = (sysTimeEnd.tv_sec - sysTimeStart.tv_sec)
     + (sysTimeEnd.tv_usec - sysTimeStart.tv_usec) / 1000000.0f;
-    printf("Process time %f seconds (sys/time.h)\n", totaltime2);
+    printf("Process time %f seconds\n", totalTime);
     
     return 0;
 }

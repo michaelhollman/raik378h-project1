@@ -15,7 +15,6 @@
 //        char text[TEXT_SHORT];
 //    } message_t;
 
-
 void print_message(message_t *message)
 {
     // message cannot be NULL

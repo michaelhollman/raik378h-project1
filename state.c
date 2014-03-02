@@ -13,7 +13,6 @@
 //        char name[TEXT_SHORT];
 //    } state_t;
 
-
 void print_state(state_t *state)
 {
     // state cannot be NULL

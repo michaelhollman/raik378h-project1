@@ -1,6 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include <time.h>
+#include <sys/time.h>
 #include <string.h>
 #include <stdbool.h>
 
@@ -14,9 +14,6 @@
 #include "datestamp.h"
 #include "file_count.h"
 
-// arbitrary large prime number
-#define HASH_SIZE 1009
-
 int main(int argc, char **argv)
 {
     //print usage if needed
@@ -28,8 +25,9 @@ int main(int argc, char **argv)
     int totalRecordNumber = atoi(argv[1]);
     
     // time the program
-    clock_t startTime = clock();
-    
+    struct timeval sysTimeStart, sysTimeEnd;
+    gettimeofday(&sysTimeStart, NULL);
+
     // set up some counters, etc.
     unsigned int recordCount = 0,
     userCount = 0,
@@ -38,8 +36,7 @@ int main(int argc, char **argv)
     timestampCount = 0,
     datestampCount = 0,
     messageCount = 0,
-    i,j,k;
-    
+    i,j;
     
     // SET UP HASH TABLES FOR CITIES, STATES, TIMESTAMPS, DATESTAMPS
     // cities
@@ -85,15 +82,13 @@ int main(int argc, char **argv)
             fprintf(stderr, "Cannot open %s\n", filename);
             continue;
         }
-        
-        // read the record from the file
         record_t *record = read_record(fp);
         
         // split location into city and state, as best we can
         char cityStr[TEXT_SHORT];
         char stateStr[TEXT_SHORT];
         
-        // there's a few records where the location is \0, which strtok breaks on
+        // there's one record where the location is \0, which strtok breaks on
         if (record->location[0] == '\0')
         {
             strncpy(cityStr, "", TEXT_SHORT);
@@ -119,7 +114,6 @@ int main(int argc, char **argv)
         {
             if (compare_states(&state, &(s->state)) == 0)
             {
-                //printf("State already found: %20s: %d\n", s->state.name, s->state.stateId);
                 stateId = s->state.stateId;
             }
         }
@@ -151,7 +145,6 @@ int main(int argc, char **argv)
         {
             if (compare_cities(&city, &(c->city)) == 0)
             {
-                //printf("City already found: %20s (%d): %d\n", c->city.name, c->city.stateId, c->city.cityId);
                 cityId = c->city.cityId;
             }
         }
@@ -169,7 +162,6 @@ int main(int argc, char **argv)
             c->next = cityHT[cityHash];
             cityHT[cityHash] = c;
         }
-        
         
         // create and write user
         user_t user;
@@ -195,7 +187,6 @@ int main(int argc, char **argv)
             {
                 if (compare_timestamps(&timestamp, &(t->timestamp)) == 0)
                 {
-                    //printf("Timestamp already found: %02d:%02d: %d\n", t->timestamp.hour, t->timestamp.minute, t->timestamp.timestampId);
                     tsId = t->timestamp.timestampId;
                 }
             }
@@ -228,7 +219,6 @@ int main(int argc, char **argv)
             {
                 if (compare_datestamps(&datestamp, &(d->datestamp)) == 0)
                 {
-                    //printf("Datestamp already found: %02d/%02d/%04d: %d\n", d->datestamp.month, d->datestamp.day, d->datestamp.year, d->datestamp.datestampId );
                     dsId = d->datestamp.datestampId;
                 }
             }
@@ -247,6 +237,7 @@ int main(int argc, char **argv)
                 datestampHT[datestampHash] = d;
             }
             
+            // create and write message
             message_t message;
             strncpy(message.text, record->messages[j].text, TEXT_LONG);
             message.userId = user.userId;
@@ -258,23 +249,10 @@ int main(int argc, char **argv)
             messageCount++;
         }
         
-        // free record
+        // free and close record
         free_record(record);
-        // close the file
         fclose(fp);
-        
-        if ((i + 1) % 2000 == 0){
-            printf("%-11s: %d\n","Users",userCount);
-            printf("%-11s: %d\n","Cities",cityCount);
-            printf("%-11s: %d\n","States",stateCount);
-            printf("%-11s: %d\n","Messages",messageCount);
-            printf("%-11s: %d\n","Timestamps",timestampCount);
-            printf("%-11s: %d\n","Datestamps",datestampCount);
-            printf("%-11s: %d\n","Total",userCount + cityCount + stateCount + messageCount + timestampCount + datestampCount);
-            printf("\n");
-        }
     }
-    // done processing all files
     
     // free city nodes
     city_node *cNode;
@@ -328,6 +306,7 @@ int main(int argc, char **argv)
     	}
     }
     
+    // create, write, print file count information file
     file_count_t fc;
     fc.users = userCount;
     fc.cities = cityCount;
@@ -340,10 +319,10 @@ int main(int argc, char **argv)
     print_file_count(&fc);
     
     // end timing the program
-    clock_t endTime = clock();
-    double totaltime = (double)(endTime - startTime)/CLOCKS_PER_SEC;
-    printf("\nProcess time %f seconds\n", totaltime);
-    
+    gettimeofday(&sysTimeEnd, NULL);
+    float totaltime2 = (sysTimeEnd.tv_sec - sysTimeStart.tv_sec)
+    + (sysTimeEnd.tv_usec - sysTimeStart.tv_usec) / 1000000.0f;
+    printf("Process time %f seconds\n", totaltime2);
     
     return 0;
 }

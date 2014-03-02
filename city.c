@@ -14,7 +14,6 @@
 //        char name[TEXT_SHORT];
 //    } city_t;
 
-
 void print_city(city_t *city)
 {
     // city cannot be NULL
@@ -98,6 +97,7 @@ void free_city(city_t *city)
 
 int compare_cities(const void *a, const void *b)
 {
+    // sort by state id, then by city name
     int ids = (((city_t*)a)->stateId - ((city_t*)b)->stateId);
     if (ids != 0) return ids;
     return strcmp(((city_t*)a)->name , ((city_t*)b)->name);
@@ -111,6 +111,7 @@ unsigned long hash_city(city_t *city)
     int len = strlen(str);
     len = (len > 5) ? 5 : len;
     
+    // this is all pretty arbitrary
     for (i = 0; i < len; i++)
     {
         hash += ((int)str[i]) * pow(10, (len - i - 1) * 3);

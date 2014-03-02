@@ -7,13 +7,11 @@
 #define TEXT_SHORT      64
 #define TEXT_LONG       1024
 
-
 // state
 typedef struct {
     int stateId;
     char name[TEXT_SHORT];
 } state_t;
-
 
 void print_state(state_t *state);
 

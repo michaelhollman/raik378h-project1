@@ -8,6 +8,9 @@
 #include "timestamp.h"
 #include "datestamp.h"
 
+// arbitrary large prime number for hashing
+#define HASH_SIZE 1009
+
 typedef struct timestamp_node {
     timestamp_t timestamp;
     struct timestamp_node *next;
@@ -28,6 +31,8 @@ typedef struct state_node {
     struct state_node *next;
 } state_node;
 
+
+// not needed since we aren't hashing/listing users/messages
 
 //typedef struct user_node {
 //    user_t user;

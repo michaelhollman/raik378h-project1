@@ -13,7 +13,6 @@
 //        int day;
 //    } datestamp_t;
 
-
 void print_datestamp(datestamp_t *datestamp)
 {
     // datestamp cannot be NULL

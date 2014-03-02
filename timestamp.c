@@ -12,7 +12,6 @@
 //        int minute;
 //    } timestamp_t;
 
-
 void print_timestamp(timestamp_t *timestamp)
 {
     // timestamp cannot be NULL

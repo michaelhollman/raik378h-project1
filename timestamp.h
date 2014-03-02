@@ -7,14 +7,12 @@
 #define TEXT_SHORT      64
 #define TEXT_LONG       1024
 
-
 // timestamp
 typedef struct {
     int timestampId;
     int hour;
     int minute;
 } timestamp_t;
-
 
 void print_timestamp(timestamp_t *timestamp);
 

@@ -7,7 +7,6 @@
 #define TEXT_SHORT      64
 #define TEXT_LONG       1024
 
-
 // datestamp
 typedef struct {
     int datestampId;
@@ -15,7 +14,6 @@ typedef struct {
     int month;
     int day;
 } datestamp_t;
-
 
 void print_datestamp(datestamp_t *datestamp);
 
