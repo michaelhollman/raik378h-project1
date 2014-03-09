@@ -19,7 +19,6 @@ typedef struct {
     int minute;                 // 0 - 59
 } message_record_t;
 
-
 // record structure
 typedef struct {
     int id;                     // user id                                      
@@ -28,7 +27,6 @@ typedef struct {
     int message_num;            // number of send message
     message_record_t *messages;        // messages
 } record_t;
-
 
 // print a record
 void print_record(record_t *record);

@@ -8,15 +8,14 @@
 #define TEXT_SHORT      64
 #define TEXT_LONG       1024
 
-
 // message
 typedef struct {
     int messageId;
     int userId;
     int timestampId;
+    int datestampId;
     char text[TEXT_LONG];
 } message_t;
-
 
 void print_message(message_t *message);
 

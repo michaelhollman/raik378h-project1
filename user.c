@@ -1,15 +1,17 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <sys/stat.h>
+#include <sys/types.h>
 
 #include "user.h"
 
 // user
 //    typedef struct {
 //        int userId;
-//        int locationId;
+//        int stateId;
+//        int cityId;
 //        char name[TEXT_SHORT];
 //    } user_t;
-
 
 void print_user(user_t *user)
 {
@@ -21,7 +23,8 @@ void print_user(user_t *user)
     
     printf("User: %08d\n", user->userId);
     printf("\t%-12s: %s\n", "name", user->name);
-    printf("\t%-12s: %08d\n", "locationId", user->locationId);
+    printf("\t%-12s: %08d\n", "cityId", user->cityId);
+    printf("\t%-12s: %08d\n", "stateId", user->stateId);
 }
 
 user_t *read_user(int fileNum)
@@ -29,7 +32,7 @@ user_t *read_user(int fileNum)
     // set up file
     FILE *fp;
     char filename[1024];
-    sprintf(filename, "user_%08d.dat", fileNum);
+    sprintf(filename, "users/user_%08d.dat", fileNum);
     
     // open file
     fp = fopen(filename, "rb");
@@ -49,8 +52,11 @@ user_t *read_user(int fileNum)
     }
     
     fread(&(user->userId), sizeof(int), 1, fp);
-    fread(&(user->locationId), sizeof(int), 1, fp);
+    fread(&(user->stateId), sizeof(int), 1, fp);
+    fread(&(user->cityId), sizeof(int), 1, fp);
     fread(&(user->name[0]), sizeof(char), TEXT_SHORT, fp);
+    
+    fclose(fp);
     
     return user;
 }
@@ -59,9 +65,10 @@ user_t *read_user(int fileNum)
 void write_user(int fileNum, user_t *user)
 {
     // set up file
+    mkdir("users", 0777);
     FILE *fp;
     char filename[1024];
-    sprintf(filename, "user_%08d.dat", fileNum);
+    sprintf(filename, "users/user_%08d.dat", fileNum);
     
     // open file
     fp = fopen(filename, "wb");
@@ -73,7 +80,8 @@ void write_user(int fileNum, user_t *user)
 
     // write user
     fwrite(&(user->userId), sizeof(int), 1, fp);
-    fwrite(&(user->locationId), sizeof(int), 1, fp);
+    fwrite(&(user->stateId), sizeof(int), 1, fp);
+    fwrite(&(user->cityId), sizeof(int), 1, fp);
     fwrite(&(user->name[0]), sizeof(char), TEXT_SHORT, fp);
     
     fclose(fp);
@@ -88,10 +96,10 @@ void free_user(user_t *user)
     free(user);
 }
 
-int compare_users(user_t *a, user_t *b)
+int compare_users(const void *a, const void *b)
 {
     // we're provided unique user ids in original data
-    return (a->userId) - (b->userId);
+    return (int) ((user_t*)a) -> userId - ((user_t*)b) -> userId;
 }
 
 unsigned long hash_user(user_t *user)

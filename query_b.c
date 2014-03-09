@@ -1,97 +1,111 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include <sys/times.h>
+#include <sys/time.h>
+#include <string.h>
+#include <stdbool.h>
 
-#include "record.h"
 #include "user.h"
 #include "message.h"
-#include "location.h"
 #include "timestamp.h"
+#include "file_count.h"
 
 int main(int argc, char **argv)
 {
-int i;
-int timeCount = 0;
-int messageCount = 0;
-int messageFound = 0;
-int timestampID = 0;
-int userID = 0;
-int last = 0;
-int first = 0;
-int mid = 0;
+    // time the program
+    struct timeval sysTimeStart, sysTimeEnd;
+    gettimeofday(&sysTimeStart, NULL);
+    
+    int i, first, mid, last;
+    
+    int finalCount = 0;
+    int timestampID = 0;
+    int userID = 0;
 
+    // get file counts
+    file_count_t *fc = read_file_count();
+    int messageCount = fc->messages;
+	int timestampCount = fc->timestamps;
+    int userCount = fc->users;
+    free_file_count(fc);
+    
+    // arrays to keep track of valid times and counted users
+	bool validTimes[timestampCount];
+	bool countedUsers[userCount];
+	for (i = 0; i < timestampCount; i ++)
+    {
+		validTimes[i] = false;
+	}
+	for (i = 0; i < userCount; i ++)
+    {
+		countedUsers[i] = false;
+	}
 
-    /* print usage if needed */
+    // binary search for a valid timestamp
+	first = 0;
+	last = timestampCount;
+    bool found = false;
+	while (first <= last && !found)
+    {
+		mid = (first + last) / 2;
+        timestamp_t *tsp = read_timestamp(mid);
 
-    if (argc != 3) {
-        fprintf(stderr, "Usage: %s total_message_number total_timestamp_number\n", argv[0]);
-        exit(0);
-    }
-
-    /* get total record number */
-    int total_message_number = atoi(argv[1]);
-	int total_timestamp_number = atoi(argv[2]);
-
-
-    char msgfilename[1024];
-	char tsfilename[1024];
-    FILE *msgfp = NULL;
-	FILE *tsfp = NULL;
-
-
-    struct timeval time_start, time_end;
-
-    /* start time */
-    gettimeofday(&time_start, NULL);
-
-    for (i = 0; i < total_message_number; i++) {
-        /* read the record from the file */
-        message_t *msgp = read_message(i);
-		timestampID = msgp->timestampId;
-		userID = msgp->userId;
-
-		last = total_timestamp_number;
-
-		while (first <= last){
-			int mid = (first + last) /2;
-			timestamp_t *tsp = read_timestamp(mid);
-
-			if (timestampID > tsp->timestampId){
-				first = mid + 1;
-				fclose(tsfp);
-			}
-			else if (timestampID > tsp->timestampId){
-				last = mid - 1;
-				fclose(tsfp);
-			}
-			else {
-				if (tsp->hour == 8 || (tsp-> hour ==9 && tsp->minute == 0)){
-					//TODO insert trippy michael hash function
-					timeCount +=1;
-				}
-				fclose(tsfp);
-				}
-
-        free_timestamp(tsp);
-
+		if (tsp->hour < 8)
+        {
+			first = mid + 1;
 		}
+		else if (tsp->hour > 9 || (tsp->hour == 9 && tsp->minute > 0))
+        {
+			last = mid - 1;
+		}
+		else // found
+        {
+            found = true;
+        }
+		free_timestamp(tsp);
+	}
+    
+    // mark valid times above and below as valid
+    int direction = 1;
+    bool done = false;
+	for (i = mid; i < timestampCount && !done; i += direction)
+    {
+		timestamp_t *tsp = read_timestamp(i);
+		if (tsp->hour == 8 || (tsp->hour == 9 && tsp->minute == 0))
+        {
+            validTimes[tsp->timestampId] = true;
+		}
+		else if (direction == 1) //reset, switch directions
+        {
+            i = mid;
+            direction = -1;
+        }
+        else
+        {
+            done = true;
+		}
+        free_timestamp(tsp);
+	}
 
+    // loop through all messages
+    for (i = 0; i < messageCount; i++) {
+        message_t *msgp = read_message(i);
+        // if the message's time is valid and we haven't counted the user already...
+		if (validTimes[msgp->timestampId] && !countedUsers[msgp->userId])
+        {
+            // mark user as counted, increment final count
+            countedUsers[msgp->userId] = true;
+            finalCount++;
+		}
 		free_message(msgp);
-
-        /* close the file */
-        fclose(msgfp);
     }
 
-    printf("count is %d", timeCount);
-    /* end time */
-    gettimeofday(&time_end, NULL);
-
-    float totaltime = (time_end.tv_sec - time_start.tv_sec)
-                    + (time_end.tv_usec - time_start.tv_usec) / 1000000.0f;
-
-
-
-    printf("\n\nProcess time %f seconds\n", totaltime);
-
+    printf("Number of matching users: %d\n", finalCount);
+    
+    // end timing the program
+    gettimeofday(&sysTimeEnd, NULL);
+    float totalTime = (sysTimeEnd.tv_sec - sysTimeStart.tv_sec)
+    + (sysTimeEnd.tv_usec - sysTimeStart.tv_usec) / 1000000.0f;
+    printf("Process time %f seconds\n", totalTime);
+    
     return 0;
 }

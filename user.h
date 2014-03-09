@@ -7,14 +7,13 @@
 #define TEXT_SHORT      64
 #define TEXT_LONG       1024
 
-
 // user
 typedef struct {
     int userId;
-    int locationId;
+    int stateId;
+    int cityId;
     char name[TEXT_SHORT];
 } user_t;
-
 
 void print_user(user_t *user);
 
@@ -24,7 +23,7 @@ void write_user(int fileNum, user_t *user);
 
 void free_user(user_t *user);
 
-int compare_users(user_t *a, user_t *b);
+int compare_users(const void *a, const void *b);
 
 unsigned long hash_user(user_t *user);
 

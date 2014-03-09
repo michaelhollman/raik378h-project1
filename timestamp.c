@@ -1,18 +1,16 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <sys/stat.h>
+#include <sys/types.h>
 
 #include "timestamp.h"
 
 // timestamp
 //    typedef struct {
 //        int timestampId;
-//        int year;
-//        int month;
-//        int day;
 //        int hour;
 //        int minute;
 //    } timestamp_t;
-
 
 void print_timestamp(timestamp_t *timestamp)
 {
@@ -23,8 +21,7 @@ void print_timestamp(timestamp_t *timestamp)
     }
     
     printf("Timestamp: %08d\n", timestamp->timestampId);
-    printf("\tMM/DD/YYYY HH:MM: %02d/%02d/%04d %02d:%02d\n", timestamp->month, timestamp->day,
-           timestamp->year, timestamp->hour, timestamp->minute);
+    printf("\tHH:MM: %02d:%02d\n", timestamp->hour, timestamp->minute);
 }
 
 timestamp_t *read_timestamp(int fileNum)
@@ -32,7 +29,7 @@ timestamp_t *read_timestamp(int fileNum)
     // set up file
     FILE *fp;
     char filename[1024];
-    sprintf(filename, "timestamp_%08d.dat", fileNum);
+    sprintf(filename, "timestamps/timestamp_%08d.dat", fileNum);
     
     // open file
     fp = fopen(filename, "rb");
@@ -47,17 +44,16 @@ timestamp_t *read_timestamp(int fileNum)
     
     // memory error
     if (timestamp == NULL) {
-        fprintf(stderr, "Cannot allocate memory for city.\n");
+        fprintf(stderr, "Cannot allocate memory for timestamp.\n");
         exit(0);
     }
     
     // read timestamp
     fread(&(timestamp->timestampId), sizeof(int), 1, fp);
-    fread(&(timestamp->year), sizeof(int), 1, fp);
-    fread(&(timestamp->month), sizeof(int), 1, fp);
-    fread(&(timestamp->day), sizeof(int), 1, fp);
     fread(&(timestamp->hour), sizeof(int), 1, fp);
     fread(&(timestamp->minute), sizeof(int), 1, fp);
+    
+    fclose(fp);
     
     return timestamp;
 }
@@ -65,9 +61,10 @@ timestamp_t *read_timestamp(int fileNum)
 void write_timestamp(int fileNum, timestamp_t *timestamp)
 {
     // set up file
+    mkdir("timestamps", 0777);
     FILE *fp;
     char filename[1024];
-    sprintf(filename, "timestamp_%08d.dat", fileNum);
+    sprintf(filename, "timestamps/timestamp_%08d.dat", fileNum);
     
     // open file
     fp = fopen(filename, "wb");
@@ -79,9 +76,6 @@ void write_timestamp(int fileNum, timestamp_t *timestamp)
     
     // write user
     fwrite(&(timestamp->timestampId), sizeof(int), 1, fp);
-    fwrite(&(timestamp->year), sizeof(int), 1, fp);
-    fwrite(&(timestamp->month), sizeof(int), 1, fp);
-    fwrite(&(timestamp->day), sizeof(int), 1, fp);
     fwrite(&(timestamp->hour), sizeof(int), 1, fp);
     fwrite(&(timestamp->minute), sizeof(int), 1, fp);
     
@@ -97,16 +91,13 @@ void free_timestamp(timestamp_t *timestamp)
     free(timestamp);
 }
 
-int compare_timestamps(timestamp_t *a, timestamp_t *b)
+int compare_timestamps(const void *a, const void *b)
 {
-    return (hash_timestamp(a) - hash_timestamp(b));
+    return ((int)hash_timestamp((timestamp_t *)a) - (int)hash_timestamp((timestamp_t *)b));
 }
 
 unsigned long hash_timestamp(timestamp_t *timestamp){
-    // YYYYMMDDHHMM
-    return ((unsigned long)(timestamp->year)*100000000) +
-           ((unsigned long)(timestamp->month) * 1000000) +
-           ((unsigned long)(timestamp->day) * 10000) +
-           ((unsigned long)(timestamp->hour) * 100) +
+    // HHMM
+    return (((unsigned long)timestamp->hour) * 100) +
            ((unsigned long)timestamp->minute);
 }
