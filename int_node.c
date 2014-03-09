@@ -25,6 +25,7 @@ void print_node(int_node_t *node)
     printf("\tnext: %08d\n", node->next);
     printf("\tprevious: %08d\n", node->previous);
     //print keys if the key/value number is greater than 0
+    int i;
     for (i = 0; i < node->num_key_value_pairs; i++) {
         printf("\tNode Key: ", node->keys[i]);
         printf(", Node Value: ", node->fileNumbers[i]);
@@ -63,7 +64,7 @@ int_node_t *read_node(int fileNum)
 
         //initalize keys & values
     node->keys = NULL;
-    node->values = NULL
+    node->fileNumbers = NULL;
 
     //allocate memory for keys and values if the key/value number is greater than 0
     if (node->num_key_value_pairs > 0) {
@@ -81,22 +82,25 @@ int_node_t *read_node(int fileNum)
         }
 
         // another memory error
-        if (node->values == NULL) {
+        if (node->fileNumbers == NULL) {
             fprintf(stderr, "Cannot allocate memory for keys.\n");
             exit(0);
         }
 
     //read each key from file
+        int i;
         for(i = 0; i < node->num_key_value_pairs; i++) {
             fread(&(node->keys[i]), sizeof(int), 1, fp);
         }
 
         // read each value (fileNumber) from file
-        for(i = 0; i < node->num_key_value_pairs; i++) {
-            fread(&(node->fileNumbers[i]), sizeof(int), 1, fp);
+        int j;
+        for(j = 0; j < node->num_key_value_pairs; j++) {
+            fread(&(node->fileNumbers[j]), sizeof(int), 1, fp);
         }
 
     return node;
+    }
 }
 
 void write_node(int fileNum, int_node_t *node) {
@@ -120,13 +124,15 @@ void write_node(int fileNum, int_node_t *node) {
 
 
     //write each key from file
+    int i;
     for(i = 0; i < node->num_key_value_pairs; i++) {
         fwrite(&(node->keys[i]), sizeof(int), 1, fp);
     }
 
     // write each value (fileNumber) from file
-    for(i = 0; i < node->num_key_value_pairs; i++) {
-        fwrite(&(node->fileNumbers[i]), sizeof(int), 1, fp);
+    int j;
+    for(j = 0; j < node->num_key_value_pairs; i++) {
+        fwrite(&(node->fileNumbers[j]), sizeof(int), 1, fp);
     }
 
     fclose(fp);
@@ -143,5 +149,5 @@ void free_node(int_node_t *node)
 
 int compare_nodes(const void *a, const void *b)
 {
-    return (((int_node_t *)a)->key - ((int_node_t *)b)->key);
+    return (((int_node_t *)a)->keys[0] - ((int_node_t *)b)->keys[0]);
 }
