@@ -27,8 +27,8 @@ void print_node(int_node_t *node)
     //print keys if the key/value number is greater than 0
     int i;
     for (i = 0; i < node->num_key_value_pairs; i++) {
-        printf("\tNode Key: ", node->keys[i]);
-        printf(", Node Value: ", node->fileNumbers[i]);
+        printf("\tKey: %08d", node->keys[i]);
+        printf(", Value: %08d", node->fileNumbers[i]);
     }
 }
 
@@ -104,10 +104,11 @@ int_node_t *read_node(int fileNum)
 }
 
 void write_node(int fileNum, int_node_t *node) {
+    printf("%d", 0);
     // set up file
     FILE *fp;
     char filename[1024];
-    sprintf(filename, "int_node_%08d.dat", fileNum);
+        sprintf(filename, "int_node_%08d.dat", fileNum);
 
     // open file
     fp = fopen(filename, "wb");
@@ -122,13 +123,13 @@ void write_node(int fileNum, int_node_t *node) {
     fwrite(&(node->fileType), sizeof(int), 1, fp);
     fwrite(&(node->num_key_value_pairs), sizeof(int), 1, fp);
 
-
+    printf("%d",1);
     //write each key from file
     int i;
     for(i = 0; i < node->num_key_value_pairs; i++) {
         fwrite(&(node->keys[i]), sizeof(int), 1, fp);
     }
-
+    printf("%d", 2);
     // write each value (fileNumber) from file
     int j;
     for(j = 0; j < node->num_key_value_pairs; i++) {
@@ -143,7 +144,10 @@ void free_node(int_node_t *node)
     if(node==NULL) {
         return;
     }
-
+    //if (node->num_key_value_pairs > 0) {
+    //    free(node->keys);
+    //    free(node->fileNumbers);
+    //}
     free(node);
 }
 

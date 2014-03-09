@@ -6,7 +6,7 @@
 
 #define TEXT_SHORT      64
 #define TEXT_LONG       1024
-
+#define FAN_OUT         200
 // int - based node
 typedef struct {
     int next;
@@ -15,6 +15,7 @@ typedef struct {
     int num_key_value_pairs;
     int *keys;
     int *fileNumbers;
+    int isLeaf;
 } int_node_t;
 
 void print_node(int_node_t *node);
