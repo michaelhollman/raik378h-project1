@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Workspace
+   version = "1.0">
+   <Group
+      location = "container:../../Library/Autosave Information"
+      name = "Objects">
+      <FileRef
+         location = "container:city.c">
+      </FileRef>
+      <FileRef
+         location = "container:city.h">
+      </FileRef>
+      <FileRef
+         location = "container:datestamp.c">
+      </FileRef>
+      <FileRef
+         location = "container:datestamp.h">
+      </FileRef>
+      <FileRef
+         location = "container:file_count.c">
+      </FileRef>
+      <FileRef
+         location = "container:file_count.h">
+      </FileRef>
+      <FileRef
+         location = "container:message.c">
+      </FileRef>
+      <FileRef
+         location = "container:message.h">
+      </FileRef>
+      <FileRef
+         location = "container:record.c">
+      </FileRef>
+      <FileRef
+         location = "container:record.h">
+      </FileRef>
+      <FileRef
+         location = "container:state.c">
+      </FileRef>
+      <FileRef
+         location = "container:state.h">
+      </FileRef>
+      <FileRef
+         location = "container:timestamp.c">
+      </FileRef>
+      <FileRef
+         location = "container:timestamp.h">
+      </FileRef>
+      <FileRef
+         location = "container:user.c">
+      </FileRef>
+      <FileRef
+         location = "container:user.h">
+      </FileRef>
+   </Group>
+   <Group
+      location = "container:../../Library/Autosave Information"
+      name = "Programs">
+      <FileRef
+         location = "container:emancipate_files.c">
+      </FileRef>
+      <FileRef
+         location = "container:make_tables.c">
+      </FileRef>
+      <FileRef
+         location = "container:make_tables.h">
+      </FileRef>
+      <FileRef
+         location = "container:query_a.c">
+      </FileRef>
+      <FileRef
+         location = "container:query_b.c">
+      </FileRef>
+      <FileRef
+         location = "container:query_c.c">
+      </FileRef>
+      <FileRef
+         location = "container:query_d.c">
+      </FileRef>
+      <FileRef
+         location = "container:sort_tables.c">
+      </FileRef>
+      <FileRef
+         location = "container:sort_tables.h">
+      </FileRef>
+   </Group>
+   <Group
+      location = "container:../../Library/Autosave Information"
+      name = "BPlus Tree">
+      <FileRef
+         location = "container:int_node.c">
+      </FileRef>
+      <FileRef
+         location = "container:int_node.h">
+      </FileRef>
+      <FileRef
+         location = "container:node.c">
+      </FileRef>
+      <FileRef
+         location = "container:node.h">
+      </FileRef>
+      <FileRef
+         location = "container:search_node.h">
+      </FileRef>
+      <FileRef
+         location = "container:search_result.h">
+      </FileRef>
+      <FileRef
+         location = "container:search_tree.c">
+      </FileRef>
+   </Group>
+   <FileRef
+      location = "container:makefile">
+   </FileRef>
+   <FileRef
+      location = "container:readme.txt">
+   </FileRef>
+   <FileRef
+      location = "container:test.c">
+   </FileRef>
+</Workspace>
