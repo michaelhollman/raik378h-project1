@@ -4,7 +4,6 @@
 #include <string.h>
 #include <stdbool.h>
 
-#include "make_tables.h"
 #include "record.h"
 #include "user.h"
 #include "message.h"
@@ -13,6 +12,28 @@
 #include "timestamp.h"
 #include "datestamp.h"
 #include "file_count.h"
+
+#define HASH_SIZE 1009
+
+typedef struct timestamp_node {
+    timestamp_t timestamp;
+    struct timestamp_node *next;
+} timestamp_node;
+
+typedef struct datestamp_node {
+    datestamp_t datestamp;
+    struct datestamp_node *next;
+} datestamp_node;
+
+typedef struct city_node {
+    city_t city;
+    struct city_node *next;
+} city_node;
+
+typedef struct state_node {
+    state_t state;
+    struct state_node *next;
+} state_node;
 
 int main(int argc, char **argv)
 {

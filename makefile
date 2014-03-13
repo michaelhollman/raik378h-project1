@@ -1,4 +1,4 @@
-all: make_tables sort_tables query_a query_b query_c query_d emancipate_files emancipate_bplus make_bplus_trees
+all: make_tables sort_tables query_a query_b query_c query_d emancipate_tables emancipate_bplus make_bplus_trees
 
 
 make_tables: make_tables.c user.c message.c timestamp.c datestamp.c city.c state.c record.c file_count.c; gcc -o make_tables make_tables.c user.c message.c timestamp.c datestamp.c city.c state.c record.c file_count.c
@@ -17,7 +17,7 @@ refactored_query_c: refactored_query_c.c user.c message.c timestamp.c datestamp.
 refactored_query_d: refactored_query_d.c user.c message.c timestamp.c datestamp.c city.c state.c record.c file_count.c; gcc -o refactored_query_d query_d.c user.c message.c timestamp.c city.c state.c record.c file_count.c
 
 
-emancipate_files: emancipate_files.c; gcc -o emancipate_files emancipate_files.c
+emancipate_tables: emancipate_tables.c; gcc -o emancipate_tables emancipate_tables.c
 emancipate_bplus: emancipate_bplus.c; gcc -o emancipate_bplus emancipate_bplus.c
 
 

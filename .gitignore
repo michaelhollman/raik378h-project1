@@ -1,5 +1,7 @@
 *.dat
 
+*.xcuserstate
+
 # Object files
 *.o
 *.ko
@@ -24,10 +26,10 @@
 test
 make_tables
 sort_tables
-query_a
-query_b
-query_c
-query_d
-emancipate_files
+*query_a
+*query_b
+*query_c
+*query_d
+emancipate_tables
 emancipate_bplus
 make_bplus_trees

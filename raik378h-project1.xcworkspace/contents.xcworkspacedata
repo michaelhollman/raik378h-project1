@@ -60,9 +60,6 @@
          location = "container:make_tables.c">
       </FileRef>
       <FileRef
-         location = "container:make_tables.h">
-      </FileRef>
-      <FileRef
          location = "container:sort_tables.c">
       </FileRef>
    </Group>
@@ -70,10 +67,10 @@
       location = "container:../../Library/Autosave Information"
       name = "BPlus Tree">
       <FileRef
-         location = "group:../../Desktop/raik378h-project1/bplus_roots.c">
+         location = "container:../../Desktop/raik378h-project1/bplus_roots.c">
       </FileRef>
       <FileRef
-         location = "group:../../Desktop/raik378h-project1/bplus_roots.h">
+         location = "container:../../Desktop/raik378h-project1/bplus_roots.h">
       </FileRef>
       <FileRef
          location = "container:int_node.c">
@@ -82,7 +79,7 @@
          location = "container:int_node.h">
       </FileRef>
       <FileRef
-         location = "group:../../Desktop/raik378h-project1/make_bplus_trees.c">
+         location = "container:../../Desktop/raik378h-project1/make_bplus_trees.c">
       </FileRef>
       <FileRef
          location = "container:search_node.h">
@@ -92,6 +89,9 @@
       </FileRef>
       <FileRef
          location = "container:search_tree.c">
+      </FileRef>
+      <FileRef
+         location = "container:search_tree.h">
       </FileRef>
    </Group>
    <Group
@@ -110,26 +110,26 @@
          location = "container:query_d.c">
       </FileRef>
       <FileRef
-         location = "group:../../Desktop/raik378h-project1/refactored_query_a.c">
+         location = "container:../../Desktop/raik378h-project1/refactored_query_a.c">
       </FileRef>
       <FileRef
-         location = "group:../../Desktop/raik378h-project1/refactored_query_b.c">
+         location = "container:../../Desktop/raik378h-project1/refactored_query_b.c">
       </FileRef>
       <FileRef
-         location = "group:../../Desktop/raik378h-project1/refactored_query_c.c">
+         location = "container:../../Desktop/raik378h-project1/refactored_query_c.c">
       </FileRef>
       <FileRef
-         location = "group:../../Desktop/raik378h-project1/refactored_query_d.c">
+         location = "container:../../Desktop/raik378h-project1/refactored_query_d.c">
       </FileRef>
    </Group>
    <Group
       location = "container:"
       name = "Util">
       <FileRef
-         location = "container:emancipate_files.c">
+         location = "container:emancipate_tables.c">
       </FileRef>
       <FileRef
-         location = "group:emancipate_bplus.c">
+         location = "container:emancipate_bplus.c">
       </FileRef>
    </Group>
    <FileRef
