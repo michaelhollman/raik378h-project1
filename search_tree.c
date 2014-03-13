@@ -8,7 +8,7 @@
 #include "search_result.h"
 #include "search_node.h"
 #include "search_tree.h"
-// #include "node.h
+#include "node.h"
 
 int main() {
 // if I wanted to run the program I could here.
@@ -31,8 +31,7 @@ search_result_t *search_int_tree(int_node_t *rootNode, int key) {
     // instantiate next to 0 to avoid having to malloc.
     int next = 0;
 
-    // when isLeaf is 0 (false), it's not a leaf node so keep going.
-    while (nextNode->isLeaf != 0)
+    while (nextNode->nodeType == NODE_TYPE_TREE)
     {
         next = binary_search_int(nextNode, key);
         // make a node from the number of the next node
@@ -59,7 +58,7 @@ search_result_t *search_int_tree(int_node_t *rootNode, int key) {
         // hooray, we found one!
         int searchResultCount = 1;
         search_node_t searchHead;
-        searchHead.fileNumber = nextNode->fileNumbers[firstKeyIndex];
+        searchHead.fileNumber = nextNode->files[firstKeyIndex];
         searchHead.next = NULL;
         searchResult.head = &searchHead;
 
@@ -84,7 +83,7 @@ void build_search_result(int_node_t *node, int key, int firstKeyIndex, search_re
         while (i > 0 && node->keys[i] == key)
         {
             search_node_t newSearchHead;
-            newSearchHead.fileNumber = node->fileNumbers[i];
+            newSearchHead.fileNumber = node->files[i];
             newSearchHead.next = searchResult->head;
             searchResult->head = &newSearchHead;
             searchResult->count++;
@@ -95,17 +94,17 @@ void build_search_result(int_node_t *node, int key, int firstKeyIndex, search_re
             //need to check the previous node starting at last key if i = 0 is a match
             int next = node->next;
             int_node_t *nextNode = convertFromIntToNode(next);
-            int beginIndex = nextNode->num_key_value_pairs - 1;
+            int beginIndex = nextNode->count - 1;
             build_search_result(nextNode, key, beginIndex, searchResult);
         }
 
         // now search forwards from first key
         i = firstKeyIndex + 1;
 
-        int num_keys = node->num_key_value_pairs;
+        int num_keys = node->count;
         while ((i< num_keys - 1) && node->keys[i] == key) {
             search_node_t newSearchHead;
-            newSearchHead.fileNumber = node->fileNumbers[i];
+            newSearchHead.fileNumber = node->files[i];
             newSearchHead.next = searchResult->head;
             searchResult->head = &newSearchHead;
             searchResult->count++;
@@ -123,18 +122,12 @@ void build_search_result(int_node_t *node, int key, int firstKeyIndex, search_re
 int binary_search_int(int_node_t *node, int key)
 {
     int low = 0;
-    int high = FAN_OUT;
+    int high = node->count -1;
 
     // empty node
     if (node->keys == NULL)
     {
         return -1;
-    }
-
-    // not an empty node, but not a full one either.
-    while (&(node->keys[high]) == NULL)
-    {
-        high--;
     }
 
     while (low<high)
