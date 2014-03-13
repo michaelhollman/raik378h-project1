@@ -34,7 +34,7 @@ void print_node(int_node_t *node)
         fprintf(stderr, "The node is NULL\n");
         exit(0);
     }
-    
+
     // print node
     printf("Node:\n");
     printf("\t%-12s: %d\n", "table type", node->tableType);
@@ -43,7 +43,8 @@ void print_node(int_node_t *node)
     printf("\t%-12s: %08d\n", "next", node->next);
     printf("\t%-12s: %08d\n", "first file", node->firstFile);
     printf("\t%-12s: %08d\n", "count", node->count);
-    for (int i = 0; i < node->count; i++) {
+    int i;
+    for (i = 0; i < node->count; i++) {
         printf("\t\t%-12s: %08d | %08d\n", "key | file", node->keys[i], node->files[i]);
     }
 }
@@ -53,26 +54,26 @@ int_node_t *read_node(int fileNum, int tableType)
     // set up file
     FILE *fp;
     char filename[1024];
-    
+
     filename_for_node(filename, tableType, fileNum);
-    
+
     // open file
     fp = fopen(filename, "rb");
-    
+
     if (!fp) {
         fprintf(stderr, "Cannot open %s\n", filename);
         exit(0);
     }
-    
+
     // allocate memory for the record
     int_node_t *node = (int_node_t *)malloc(sizeof(int_node_t));
-    
+
     // memory error
     if (node == NULL) {
         fprintf(stderr, "Cannot allocate memory for node.\n");
         exit(0);
     }
-    
+
     // read node
     fread(&(node->next),        sizeof(int), 1, fp);
     fread(&(node->previous),    sizeof(int), 1, fp);
@@ -94,7 +95,7 @@ void write_node(int fileNum, int_node_t *node) {
     FILE *fp;
     char filename[1024];
     filename_for_node(filename, node->tableType, fileNum);
-    
+
     // open file
     fp = fopen(filename, "wb");
     if (!fp)
@@ -111,7 +112,7 @@ void write_node(int fileNum, int_node_t *node) {
     fwrite(&(node->firstFile),   sizeof(int), 1, fp);
     fwrite(&(node->keys),        sizeof(int), FAN_OUT, fp);
     fwrite(&(node->files),       sizeof(int), FAN_OUT, fp);
-    
+
     fclose(fp);
 }
 
@@ -120,7 +121,7 @@ void free_node(int_node_t *node)
     if(node==NULL) {
         return;
     }
-    
+
     free(node);
 }
 
@@ -152,7 +153,7 @@ int insert_node(int rootFileNum, int tableType, int newKeyToInsert, int newFileN
         newRoot.firstFile = rootFileNum;
         newRoot.keys[0] = result.newKey;
         newRoot.files[0] = result.newFile;
-        
+
         write_node(newRootFileNum, &newRoot);
         return newRootFileNum;
     }
@@ -161,7 +162,7 @@ int insert_node(int rootFileNum, int tableType, int newKeyToInsert, int newFileN
         // didn't split. root stays the same
         return rootFileNum;
     }
-    
+
     return 0;
 }
 
@@ -170,7 +171,7 @@ void insert_node_internal(insert_node_result_t *result, int nodeFileNum, int tab
     int i, j;
     // open this current node
     int_node_t *node = read_node(nodeFileNum, tableType);
-    
+
     // LEAF NODE
     if (node->nodeType == NODE_TYPE_LEAF)
     {
@@ -180,21 +181,21 @@ void insert_node_internal(insert_node_result_t *result, int nodeFileNum, int tab
             // create new leaf node
             int_node_t newNode;
             int newNodeFileNum = ++nodeFileCounter[tableType];
-            
+
             newNode.next = node->next;
             newNode.previous = nodeFileNum;
             node->next = newNodeFileNum;
-            
+
             newNode.tableType = tableType;
             newNode.nodeType = NODE_TYPE_LEAF;
             newNode.firstFile = -1;
-            
+
             // create temp arrays to split this node into two
             int tempArraySize = node->count + 1;
             int tempKeys[tempArraySize];
             int tempFiles[tempArraySize];
             bool insertedNew = false;
-            
+
             for (i = 0; i < tempArraySize; i++)
             {
                 if (i < node->count && node->keys[i] <= newKeyToInsert)
@@ -218,7 +219,7 @@ void insert_node_internal(insert_node_result_t *result, int nodeFileNum, int tab
             int mid = tempArraySize / 2;
             node->count = mid;
             newNode.count = tempArraySize - mid;
-            
+
             // set old node values
             for (i = 0; i < FAN_OUT; i++)
             {
@@ -233,7 +234,7 @@ void insert_node_internal(insert_node_result_t *result, int nodeFileNum, int tab
                     node->files[i] = 0;
                 }
             }
-            
+
             // set new node values
             for (i = 0; i < FAN_OUT; i++)
             {
@@ -248,11 +249,11 @@ void insert_node_internal(insert_node_result_t *result, int nodeFileNum, int tab
                     newNode.files[i] = 0;
                 }
             }
-            
+
             // write both nodes
             write_node(nodeFileNum, node);
             write_node(newNodeFileNum, &newNode);
-            
+
             // modify result
             result->didSplit = true;
             result->newKey = newNode.keys[0];
@@ -274,10 +275,10 @@ void insert_node_internal(insert_node_result_t *result, int nodeFileNum, int tab
             node->keys[i] = newKeyToInsert;
             node->files[i] = newFileNumToInsert;
             node->count++;
-            
+
             // re-write node
             write_node(nodeFileNum, node);
-            
+
             // modify result
             result->didSplit = false;
             result->newKey = -1;
@@ -301,7 +302,7 @@ void insert_node_internal(insert_node_result_t *result, int nodeFileNum, int tab
             {
                 mid = (first + last) / 2;
                 int comparison = newKeyToInsert - node->keys[mid];
-                
+
                 if (comparison == 0)
                 {
                     found = node->files[mid];
@@ -317,11 +318,11 @@ void insert_node_internal(insert_node_result_t *result, int nodeFileNum, int tab
             }
             // at this point, `last` will be moved to correspond with the key that points to the correct file.... I think. hopefully.
             found = (found == -1) ? node->files[last] : found;
-            
+
             // insert into appropriate child
             insert_node_internal(result, found, tableType, newKeyToInsert, newFileNumToInsert);
         }
-        
+
         if (result->didSplit)
         {
             // add new key/file
@@ -330,15 +331,15 @@ void insert_node_internal(insert_node_result_t *result, int nodeFileNum, int tab
                 // split and create new tree node
                 int_node_t newNode;
                 int newNodeFileNum = ++nodeFileCounter[tableType];
-                
+
                 newNode.next = node->next;
                 newNode.previous = nodeFileNum;
                 node->next = newNodeFileNum;
-                
+
                 newNode.tableType = tableType;
                 newNode.nodeType = NODE_TYPE_TREE;
                 newNode.firstFile = -1; // change this later
-                
+
                 // create temp arrays to split this node into two
                 int tempArraySize = node->count + 1;
                 int tempKeys[tempArraySize];
@@ -364,11 +365,11 @@ void insert_node_internal(insert_node_result_t *result, int nodeFileNum, int tab
                         tempFiles[i+1] = node->files[i];
                     }
                 }
-                
+
                 int mid = tempArraySize / 2;
                 node->count = mid;
                 newNode.count = tempArraySize - mid - 1;
-                
+
                 // rewrite old node values
                 for (i = 0; i < FAN_OUT; i++)
                 {
@@ -383,7 +384,7 @@ void insert_node_internal(insert_node_result_t *result, int nodeFileNum, int tab
                         node->files[i] = 0;
                     }
                 }
-                
+
                 // write new node values
                 for (i = 0; i < FAN_OUT; i++)
                 {
@@ -399,11 +400,11 @@ void insert_node_internal(insert_node_result_t *result, int nodeFileNum, int tab
                     }
                 }
                 newNode.firstFile = tempFiles[mid];
-                
+
                 // write both nodes
                 write_node(nodeFileNum, node);
                 write_node(newNodeFileNum, &newNode);
-                
+
                 // mid gets moved up to the next layer
                 result->didSplit = true;
                 result->newKey = tempKeys[mid];
@@ -424,10 +425,10 @@ void insert_node_internal(insert_node_result_t *result, int nodeFileNum, int tab
                 node->keys[i] = result->newKey;
                 node->files[i] = result->newFile;
                 node->count++;
-                
+
                 // re-write node
                 write_node(nodeFileNum, node);
-                
+
                 // modify result
                 result->didSplit = false;
                 result->newKey = -1;
@@ -438,3 +439,4 @@ void insert_node_internal(insert_node_result_t *result, int nodeFileNum, int tab
     }
     free_node(node);
 }
+

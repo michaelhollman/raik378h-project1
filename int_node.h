@@ -56,5 +56,4 @@ int insert_node(int rootFileNum, int tableType, int insertNewKey, int newFileNum
 
 void insert_node_internal(insert_node_result_t *result, int nodeFileNum, int tableType, int newKey, int newFileNumToInsert);
 
-
 #endif
