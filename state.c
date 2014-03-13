@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <ctype.h>
 #include <math.h>
 #include <sys/stat.h>
 #include <sys/types.h>
@@ -99,14 +100,28 @@ int compare_states(const void *a, const void *b)
 unsigned long hash_state(state_t *state)
 {
     char *str = state->name;
-    unsigned long hash = 0, i;
     
-    int len = strlen(str);
-    len = (len > 5) ? 5 : len;
+    int len, l, z, base, correction;
+    len = strlen(str);
+    l = (len > 6) ? 6 : len;
+    correction = 0;
     
-    for (i = 0; i < len; i++)
-    {
-        hash += ((int)str[i]) * pow(10, (len - i - 1) * 3);
+    unsigned long hash = 0;
+    char c;
+    
+    for(z = 0; z < l; z++){
+        c = tolower(str[z + correction]);
+        int num = ((int)c) - 97;
+        if(num < 0){
+            z--;
+            correction++;
+            l = (len - correction < 6) ? (len - correction) : 6;
+        }
+        else{
+            base = rint(pow(26, 5 - z));
+            hash += num * base;
+        }
     }
     return hash;
 }
+

@@ -14,25 +14,24 @@ int main(int argc, char **argv)
     int i, j;
     unsigned long tot;
     
-    remove("file_count.dat");
+    remove("bplus_roots.dat");
     
     const char* const FILE_PREFIX[] = { "user", "state", "city", "message", "timestamp", "datestamp" };
-    const char* const DIRECTORY_PREFIX[] = { "users", "states", "cities", "messages", "timestamps", "datestamps" };
-    
+
     for (j = 0; j < 6; j++)
     {
         i=0;
-        sprintf(filename, "%s/%s_%08d.dat", DIRECTORY_PREFIX[j] ,FILE_PREFIX[j], i);
+        sprintf(filename, "bplus/%s_node_%08d.dat", FILE_PREFIX[j], i);
         while (remove(filename) == 0)
         {
             i++;
-            sprintf(filename, "%s/%s_%08d.dat", DIRECTORY_PREFIX[j] ,FILE_PREFIX[j], i);
+            sprintf(filename, "bplus/%s_node_%08d.dat", FILE_PREFIX[j], i);
         }
-        printf("Removed %d %s files\n", i, FILE_PREFIX[j]);
+        printf("Removed %d %s b+ nodes\n", i, FILE_PREFIX[j]);
         tot += i;
     }
-
-    printf("Total: removed %lu files\n", tot);
+    
+    printf("Total: removed %lu b+ nodes\n", tot);
     
     // end timing the program
     gettimeofday(&sysTimeEnd, NULL);

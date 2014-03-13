@@ -98,8 +98,13 @@ void free_user(user_t *user)
 
 int compare_users(const void *a, const void *b)
 {
-    // we're provided unique user ids in original data
-    return (int) ((user_t*)a) -> userId - ((user_t*)b) -> userId;
+    // compare by state id, then user id
+    int diff = (int) ((user_t*)a)->stateId - ((user_t*)b)->stateId;
+    if (diff == 0)
+    {
+        diff = (int) ((user_t*)a)->userId - ((user_t*)b)->userId;
+    }
+    return diff;
 }
 
 unsigned long hash_user(user_t *user)

@@ -6,7 +6,6 @@
 #include <stdbool.h>
 
 #include "int_node.h"
-#include "node.h"
 
 // int - based node
 //typedef struct {
@@ -19,6 +18,14 @@
 //    int keys[FAN_OUT];          // array of keys (the value of what the table is sorted by)
 //    int files[FAN_OUT];         // file number for the corresponding key
 //} int_node_t;
+
+const char* const TABLE_TYPE[] = { "user", "state", "city", "message", "timestamp", "datestamp" };
+const char* const NODE_TYPE[] = { "tree", "leaf" };
+
+int filename_for_node(char* outchar, int tableType, int fileNumber)
+{
+    return sprintf(outchar, "bplus/%s_node_%08d.dat", TABLE_TYPE[tableType], fileNumber);
+}
 
 void print_node(int_node_t *node)
 {
@@ -76,9 +83,10 @@ int_node_t *read_node(int fileNum, int tableType)
     fread(&(node->keys),        sizeof(int), FAN_OUT, fp);
     fread(&(node->files),       sizeof(int), FAN_OUT, fp);
     
+    fclose(fp);
+    
     return node;
 }
-
 
 void write_node(int fileNum, int_node_t *node) {
     // set up file
@@ -121,13 +129,14 @@ int compare_nodes(const void *a, const void *b)
     return (((int_node_t *)a)->keys[0] - ((int_node_t *)b)->keys[0]);
 }
 
-
 // assume that the roots will be manually created as abc_xyz_0000000.dat
 static int nodeFileCounter[] = {0, 0, 0, 0, 0, 0};
 
 int insert_node(int rootFileNum, int tableType, int newKeyToInsert, int newFileNumToInsert)
 {
     insert_node_result_t result;
+    result.didSplit = false;
+    
     insert_node_internal(&result, rootFileNum, tableType, newKeyToInsert, newFileNumToInsert);
 
     if (result.didSplit)

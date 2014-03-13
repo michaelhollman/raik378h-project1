@@ -4,7 +4,6 @@
 #include <stdbool.h>
 #include <sys/time.h>
 
-#include "sort_tables.h"
 #include "record.h"
 #include "user.h"
 #include "message.h"
@@ -15,11 +14,6 @@
 #include "file_count.h"
 
 int main(int argc, char **argv)
-{
-    return sort_tables();
-}
-
-int sort_tables()
 {
     printf("Sorting tables starting...\n");
 
@@ -34,12 +28,44 @@ int sort_tables()
     
     // note: wrapping each section in scopes { } so that the large arrays can be garbage collected once we're done with each one
     
-    
     // users
-    // don't need to sort, already sorted by id when created
+    {
+        printf("Sorting %d users\n", fc->users);
+        
+        // time this section
+        struct timeval startSysTimeSub, endSysTimeSub;
+        gettimeofday(&startSysTimeSub, NULL);
+        
+        // get count
+        int count = fc->users;
+        user_t users[count];
+        
+        // read
+        for (i = 0; i < count; i++)
+        {
+            user_t *tmp = read_user(i);
+            users[i] = *tmp;
+            free_user(tmp);
+        }
+        
+        // sort
+        qsort(users, count, sizeof(users[0]), compare_users);
+        
+        // write
+        for (i = 0; i < count; i++)
+        {
+            write_user(i, &users[i]);
+            //print_user(&users[i]);
+        }
+        
+        // end timing this section
+        gettimeofday(&endSysTimeSub, NULL);
+        float totalTime = (endSysTimeSub.tv_sec - startSysTimeSub.tv_sec)
+        + (endSysTimeSub.tv_usec - startSysTimeSub.tv_usec) / 1000000.0f;
+        printf("Table process time %f seconds\n", totalTime);
+    }
     
     // states
-    // sort (name alpha)
     {
         printf("Sorting %d sates\n", fc->states);
         
@@ -77,7 +103,6 @@ int sort_tables()
     }
     
     // cities
-    // sort (stateId numeric, name alpha)
     {
         printf("Sorting %d cities\n", fc->cities);
         
@@ -115,10 +140,49 @@ int sort_tables()
     }
     
     // messages
-    // don't need to sort, already sorted by id when created
-    
+    // note: this sort is quite a bit different since we cant dump all 1.9 million messages into memory.
+    {
+        printf("Sorting %d messages\n", fc->messages);
+        
+        // time this section
+        struct timeval startSysTimeSub, endSysTimeSub;
+        gettimeofday(&startSysTimeSub, NULL);
+        
+        // get count
+        int count = fc->messages;
+        message_sort_t message_sorts[count];
+        
+        // read into temp struct/array, rename file
+        for (i = 0; i < count; i++)
+        {
+            message_t *msg = read_message(i);
+            presort_message(i);
+
+            message_sort_t tmp;
+            tmp.fileNum = i;
+            tmp.timestampId = msg->timestampId;
+            
+            message_sorts[i] = tmp;
+            free_message(msg);
+        }
+        
+        // sort
+        qsort(message_sorts, count, sizeof(message_sorts[0]), compare_message_sorts);
+        
+        // rename back in sorted order
+        for (i = 0; i < count; i++)
+        {
+            unpresort_message(message_sorts[i].fileNum, i);
+        }
+        
+        // end timing this section
+        gettimeofday(&endSysTimeSub, NULL);
+        float totalTime = (endSysTimeSub.tv_sec - startSysTimeSub.tv_sec)
+        + (endSysTimeSub.tv_usec - startSysTimeSub.tv_usec) / 1000000.0f;
+        printf("Table process time %f seconds\n", totalTime);
+    }
+
     // timestamps
-    // sort (numeric)
     {
         printf("Sorting %d timestamps\n", fc->timestamps);
         
@@ -192,7 +256,7 @@ int sort_tables()
         + (endSysTimeSub.tv_usec - startSysTimeSub.tv_usec) / 1000000.0f;
         printf("Table process time %f seconds\n", totalTime);
     }
-    
+         
     free_file_count(fc);
     
     // end timing the program

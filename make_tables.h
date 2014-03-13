@@ -32,7 +32,7 @@ typedef struct state_node {
 } state_node;
 
 
-// not needed since we aren't hashing/listing users/messages
+// not needed since we aren't hashing/listing users/messages, since they aren't unique
 
 //typedef struct user_node {
 //    user_t user;

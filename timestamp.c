@@ -93,7 +93,7 @@ void free_timestamp(timestamp_t *timestamp)
 
 int compare_timestamps(const void *a, const void *b)
 {
-    return ((int)hash_timestamp((timestamp_t *)a) - (int)hash_timestamp((timestamp_t *)b));
+    return (int) (hash_timestamp((timestamp_t *)a) - hash_timestamp((timestamp_t *)b));
 }
 
 unsigned long hash_timestamp(timestamp_t *timestamp){

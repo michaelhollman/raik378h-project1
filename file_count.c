@@ -71,12 +71,6 @@ void write_file_count(file_count_t *fc)
         exit(0);
     }
     
-    // memory error
-    if (fc == NULL) {
-        fprintf(stderr, "Cannot allocate memory for file_count.\n");
-        exit(0);
-    }
-    
     // read file_count
     fwrite(&(fc->users), sizeof(int), 1, fp);
     fwrite(&(fc->cities), sizeof(int), 1, fp);
@@ -86,7 +80,6 @@ void write_file_count(file_count_t *fc)
     fwrite(&(fc->datestamps), sizeof(int), 1, fp);
     
     fclose(fp);
-
 }
 
 void free_file_count(file_count_t *fc)
