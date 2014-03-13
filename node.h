@@ -2,7 +2,7 @@
 #define _node_h
 
 // Change this value to adjust the fan-out of the tables
-#define FAN_OUT         5
+#define FAN_OUT         2
 
 #define TEXT_SHORT      64
 #define TEXT_LONG       1024

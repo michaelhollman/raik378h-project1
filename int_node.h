@@ -3,6 +3,7 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <stdbool.h>
 
 #include "node.h"
 
@@ -38,6 +39,9 @@ void free_node(int_node_t *node);
 int compare_nodes(const void *a, const void *b);
 
 // returns root file num
-int insert_node(int rootFileNum, int tableType, int key, int tableFileNum);
+int insert_node(int rootFileNum, int tableType, int insertNewKey, int newFileNumToInsert);
+
+void insert_node_internal(insert_node_result_t *result, int nodeFileNum, int tableType, int newKey, int newFileNumToInsert);
+
 
 #endif

@@ -3,6 +3,7 @@
 #include <string.h>
 #include <sys/stat.h>
 #include <sys/types.h>
+#include <stdbool.h>
 
 #include "int_node.h"
 #include "node.h"
@@ -28,14 +29,15 @@ void print_node(int_node_t *node)
     }
     
     // print node
-    printf("\tfileType: %08d\n", node->nodeType);
-    printf("\tnext: %08d\n", node->next);
-    printf("\tprevious: %08d\n", node->previous);
-    //print keys if the key/value number is greater than 0
-    int i;
-    for (i = 0; i < node->count; i++) {
-        printf("\tKey: %08d", node->keys[i]);
-        printf("  File#: %08d\n", node->files[i]);
+    printf("Node:\n");
+    printf("\t%-12s: %d\n", "table type", node->tableType);
+    printf("\t%-12s: %d\n", "node type", node->nodeType);
+    printf("\t%-12s: %08d\n", "previous", node->previous);
+    printf("\t%-12s: %08d\n", "next", node->next);
+    printf("\t%-12s: %08d\n", "first file", node->firstFile);
+    printf("\t%-12s: %08d\n", "count", node->count);
+    for (int i = 0; i < node->count; i++) {
+        printf("\t\t%-12s: %08d | %08d\n", "key | file", node->keys[i], node->files[i]);
     }
 }
 
@@ -120,39 +122,45 @@ int compare_nodes(const void *a, const void *b)
 }
 
 
-// assume that the roots will be manually created as x_y_0000000.dat
+// assume that the roots will be manually created as abc_xyz_0000000.dat
 static int nodeFileCounter[] = {0, 0, 0, 0, 0, 0};
 
-int insert_node(int rootFileNum, int tableType, int key, int tableFileNum)
+int insert_node(int rootFileNum, int tableType, int newKeyToInsert, int newFileNumToInsert)
 {
-    int_node_t *root = read_node(rootFileNum, tableType);
-    
-    if (root->nodeType == NODE_TYPE_LEAF)
+    insert_node_result_t result;
+    insert_node_internal(&result, rootFileNum, tableType, newKeyToInsert, newFileNumToInsert);
+
+    if (result.didSplit)
     {
-        if (root->count > FAN_OUT)
-        {
-            // special case. root was a leaf node, is going to become a tree node
-            // split root, create new root, holy cow
-        }
-        else
-        {
-            // insert into root (which is a leaf right now)
-        }
+        int_node_t newRoot;
+        int newRootFileNum = ++nodeFileCounter[tableType];
+
+        newRoot.next = -1;
+        newRoot.previous = -1;
+        newRoot.tableType = tableType;
+        newRoot.nodeType = NODE_TYPE_TREE;
+        newRoot.count = 1;
+        newRoot.firstFile = rootFileNum;
+        newRoot.keys[0] = result.newKey;
+        newRoot.files[0] = result.newFile;
+        
+        write_node(newRootFileNum, &newRoot);
+        return newRootFileNum;
     }
-    else // NODE_TYPE_TREE
+    else
     {
-        // get the leaf node we want to insert into
-        int_node_t *leaf = find_leaf(rootFileNum, tableType, key);
-        // insert into this leaf node.
+        // didn't split. root stays the same
+        return rootFileNum;
     }
     
+    return 0;
 }
 
-void insert_node_private(insert_node_result_t *result, int nodeFileNum, int tableType, int key, int tableFileNum)
+void insert_node_internal(insert_node_result_t *result, int nodeFileNum, int tableType, int newKeyToInsert, int newFileNumToInsert)
 {
+    int i, j;
     // open this current node
     int_node_t *node = read_node(nodeFileNum, tableType);
-    // TODO free me later!
     
     // LEAF NODE
     if (node->nodeType == NODE_TYPE_LEAF)
@@ -162,76 +170,90 @@ void insert_node_private(insert_node_result_t *result, int nodeFileNum, int tabl
         {
             // create new leaf node
             int_node_t newNode;
-            int newFileNum = ++nodeFileCounter[tableType];
+            int newNodeFileNum = ++nodeFileCounter[tableType];
             
             newNode.next = node->next;
             newNode.previous = nodeFileNum;
-            node->next = newFileNum;
+            node->next = newNodeFileNum;
             
             newNode.tableType = tableType;
             newNode.nodeType = NODE_TYPE_LEAF;
             newNode.firstFile = -1;
             
-            int half = node->count / 2;
+            // create temp arrays to split this node into two
+            int tempArraySize = node->count + 1;
+            int tempKeys[tempArraySize];
+            int tempFiles[tempArraySize];
+            bool insertedNew = false;
             
-            newNode.count = half;
-            node->count = node->count - half;
-            
-            // split current node's keys and files
-            for (int i = 0; i < half; i++)
+            for (i = 0; i < tempArraySize; i++)
             {
-                newNode.keys[i] = node->keys[i+half];
-                newNode.files[i] = node->files[i+half];
-                node->keys[i+half] = 0;
-                node->files[i+half] = 0;
+                if (i < node->count && node->keys[i] <= newKeyToInsert)
+                {
+                    tempKeys[i] = node->keys[i];
+                    tempFiles[i] = node->files[i];
+                }
+                else if (!insertedNew)
+                {
+                    tempKeys[i] = newKeyToInsert;
+                    tempFiles[i] = newFileNumToInsert;
+                    insertedNew = true;
+                }
+                else
+                {
+                    tempKeys[i] = node->keys[i-1];
+                    tempFiles[i] = node->files[i-1];
+                }
+            }
+
+            int mid = tempArraySize / 2;
+            node->count = mid;
+            newNode.count = tempArraySize - mid;
+            
+            // set old node values
+            for (i = 0; i < FAN_OUT; i++)
+            {
+                if (i < node->count)
+                {
+                    node->keys[i] = tempKeys[i];
+                    node->files[i] = tempFiles[i];
+                }
+                else
+                {
+                    node->keys[i] = 0;
+                    node->files[i] = 0;
+                }
             }
             
-            // insert new key
-            if (key < newNode.keys[0])
+            // set new node values
+            for (i = 0; i < FAN_OUT; i++)
             {
-                // into old node
-                int i = 0, j;
-                while(i < node->count && key >= node->keys[i])
-                    i++;
-                for (j = FAN_OUT - 1; j > i; j--)
+                if (i < newNode.count)
                 {
-                    node->keys[j] = node->keys[j-1];
-                    node->files[j] = node->files[j-1];
+                    newNode.keys[i] = tempKeys[i+mid];
+                    newNode.files[i] = tempFiles[i+mid];
                 }
-                node->keys[i] = key;
-                node->files[i] = newFileNum;
-            }
-            else
-            {
-                // into new node
-                int i = 0, j;
-                while(i < newNode.count && key >= newNode.keys[i])
+                else
                 {
-                    i++;
+                    newNode.keys[i] = 0;
+                    newNode.files[i] = 0;
                 }
-                for (j = FAN_OUT - 1; j > i; j--)
-                {
-                    newNode.keys[j] = newNode.keys[j-1];
-                    newNode.files[j] = newNode.files[j-1];
-                }
-                newNode.keys[i] = key;
-                newNode.files[i] = newFileNum;
             }
             
             // write both nodes
             write_node(nodeFileNum, node);
-            write_node(newFileNum, &newNode);
+            write_node(newNodeFileNum, &newNode);
             
             // modify result
             result->didSplit = true;
             result->newKey = newNode.keys[0];
-            result->newFile = newFileNum;
+            result->newFile = newNodeFileNum;
         }
         else
         {
             // insert into this leaf node, mark result as such
-            int i = 0, j;
-            while(i < node->count && key >= node->keys[i])
+            i = 0;
+            while(i < node->count && newKeyToInsert >= node->keys[i])
             {
                 i++;
             }
@@ -240,8 +262,9 @@ void insert_node_private(insert_node_result_t *result, int nodeFileNum, int tabl
                 node->keys[j] = node->keys[j-1];
                 node->files[j] = node->files[j-1];
             }
-            node->keys[i] = key;
-            node->files[i] = newFileNum;
+            node->keys[i] = newKeyToInsert;
+            node->files[i] = newFileNumToInsert;
+            node->count++;
             
             // re-write node
             write_node(nodeFileNum, node);
@@ -250,17 +273,16 @@ void insert_node_private(insert_node_result_t *result, int nodeFileNum, int tabl
             result->didSplit = false;
             result->newKey = -1;
             result->newFile = -1;
-            
         }
     }
     // TREE NODE
     else
     {
         // find the appropriate child node, recurse deeper
-        if (key < node->keys[0])
+        if (newKeyToInsert < node->keys[0])
         {
             //recurse into the first child
-            insert_node_private(result, node->firstFile, tableType, key, tableFileNum)
+            insert_node_internal(result, node->firstFile, tableType, newKeyToInsert, newFileNumToInsert);
         }
         else
         {
@@ -269,7 +291,7 @@ void insert_node_private(insert_node_result_t *result, int nodeFileNum, int tabl
             while (first <= last && found == -1)
             {
                 mid = (first + last) / 2;
-                int comparison = key - node->keys[mid];
+                int comparison = newKeyToInsert - node->keys[mid];
                 
                 if (comparison == 0)
                 {
@@ -288,13 +310,122 @@ void insert_node_private(insert_node_result_t *result, int nodeFileNum, int tabl
             found = (found == -1) ? node->files[last] : found;
             
             // insert into appropriate child
-            insert_node_private(result, found, tableType, key, tableFileNum);
+            insert_node_internal(result, found, tableType, newKeyToInsert, newFileNumToInsert);
         }
         
-        //check result for split, add key/file to current node, mark result
-        
-        // note: handle if this is the first insert (root)????
-        
-        // TODO
+        if (result->didSplit)
+        {
+            // add new key/file
+            if (node->count >= FAN_OUT)
+            {
+                // split and create new tree node
+                int_node_t newNode;
+                int newNodeFileNum = ++nodeFileCounter[tableType];
+                
+                newNode.next = node->next;
+                newNode.previous = nodeFileNum;
+                node->next = newNodeFileNum;
+                
+                newNode.tableType = tableType;
+                newNode.nodeType = NODE_TYPE_TREE;
+                newNode.firstFile = -1; // change this later
+                
+                // create temp arrays to split this node into two
+                int tempArraySize = node->count + 1;
+                int tempKeys[tempArraySize];
+                int tempFiles[tempArraySize];
+                bool insertedNew = false;
+                for (i = 0; i < node->count; i++)
+                {
+                    if (node->keys[i] <= result->newKey)
+                    {
+                        tempKeys[i] = node->keys[i];
+                        tempFiles[i] = node->files[i];
+                    }
+                    else if (!insertedNew)
+                    {
+                        tempKeys[i] = result->newKey;
+                        tempFiles[i] = result->newFile;
+                        insertedNew = true;
+                        i--;
+                    }
+                    else
+                    {
+                        tempKeys[i+1] = node->keys[i];
+                        tempFiles[i+1] = node->files[i];
+                    }
+                }
+                
+                int mid = tempArraySize / 2;
+                node->count = mid;
+                newNode.count = tempArraySize - mid - 1;
+                
+                // rewrite old node values
+                for (i = 0; i < FAN_OUT; i++)
+                {
+                    if (i < node->count)
+                    {
+                        node->keys[i] = tempKeys[i];
+                        node->files[i] = tempFiles[i];
+                    }
+                    else
+                    {
+                        node->keys[i] = 0;
+                        node->files[i] = 0;
+                    }
+                }
+                
+                // write new node values
+                for (i = 0; i < FAN_OUT; i++)
+                {
+                    if (i < newNode.count)
+                    {
+                        newNode.keys[i] = tempKeys[mid + 1];
+                        newNode.files[i] = tempFiles[mid + 1];
+                    }
+                    else
+                    {
+                        newNode.keys[i] = 0;
+                        newNode.files[i] = 0;
+                    }
+                }
+                newNode.firstFile = tempFiles[mid];
+                
+                // write both nodes
+                write_node(nodeFileNum, node);
+                write_node(newNodeFileNum, &newNode);
+                
+                // mid gets moved up to the next layer
+                result->didSplit = true;
+                result->newKey = tempKeys[mid];
+                result->newFile = newNodeFileNum;
+            }
+            else
+            {
+                i = 0;
+                while(i < node->count && result->newKey >= node->keys[i])
+                {
+                    i++;
+                }
+                for (j = FAN_OUT - 1; j > i; j--)
+                {
+                    node->keys[j] = node->keys[j-1];
+                    node->files[j] = node->files[j-1];
+                }
+                node->keys[i] = result->newKey;
+                node->files[i] = result->newFile;
+                node->count++;
+                
+                // re-write node
+                write_node(nodeFileNum, node);
+                
+                // modify result
+                result->didSplit = false;
+                result->newKey = -1;
+                result->newFile = -1;
+            }
+        }
+        // else, do nothing
     }
+    free_node(node);
 }
