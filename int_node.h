@@ -28,4 +28,6 @@ void free_node(int_node_t *node);
 
 int compare_nodes(const void *a, const void *b);
 
+int_node_t *convertFromIntToNode(int fileNumber);
+
 #endif

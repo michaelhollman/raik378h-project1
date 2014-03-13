@@ -7,6 +7,7 @@
 #include "int_node.h"
 #include "search_result.h"
 #include "search_node.h"
+#include "search_tree.h"
 // #include "node.h
 
 int main() {
@@ -31,18 +32,41 @@ search_result_t *search_int_tree(int_node_t *rootNode, int key) {
     int next = 0;
 
     // when isLeaf is 0 (false), it's not a leaf node so keep going.
-    // TODO uncomment
-    while (false /*nextNode->isLeaf != 0*/)
+    while (nextNode->isLeaf != 0)
     {
-        next = binary_search_int(next, key);
+        next = binary_search_int(nextNode, key);
         // make a node from the number of the next node
-        // TODO uncomment
-        //int_node_t *nextNode = convertFromIntToNodeName(next);
+        // TODO: convertFromIntToNodeName doesn't do anything right now - needs implemented from how Michael fixed it
+        int_node_t *nextNode = convertFromIntToNode(next);
     }
 
     // now the node in next is a leaf. so binary search it to get the key!
-    // need to build a search result.
+    // need to  build a search result.
 
+    // binary search NextNode to find first instance of key.
+    // since this is not a leaf node, the keys should go to data files, not more nodes.
+    int firstKeyIndex = binary_search_int(nextNode, key);
+    search_result_t searchResult;
+
+    if (nextNode->keys[firstKeyIndex] != key)
+    {
+    // this could be false since our binary search function is set up to get the closest match if it can't find the exact key
+    // ie, instead of returning -1 when we search 5 and it isn't there, we'll return the next closest number
+            searchResult.head = NULL;
+            searchResult.count = 0;
+    }
+    else {
+        // hooray, we found one!
+        int searchResultCount = 1;
+        search_node_t searchHead;
+        searchHead.fileNumber = nextNode->fileNumbers[firstKeyIndex];
+        searchHead.next = NULL;
+        searchResult.head = &searchHead;
+
+        build_search_result(nextNode, key, firstKeyIndex, &searchResult);
+
+
+    }
 
     // end timing the program
     gettimeofday(&sysTimeEnd, NULL);
@@ -50,6 +74,49 @@ search_result_t *search_int_tree(int_node_t *rootNode, int key) {
     + (sysTimeEnd.tv_usec - sysTimeStart.tv_usec) / 1000000.0f;
     printf("Search process time %f seconds\n", totalTime);
 
+
+}
+
+void build_search_result(int_node_t *node, int key, int firstKeyIndex, search_result_t *searchResult)
+{
+    // search backward from the key you found w/ binary search
+        int i = firstKeyIndex - 1;
+        while (i > 0 && node->keys[i] == key)
+        {
+            search_node_t newSearchHead;
+            newSearchHead.fileNumber = node->fileNumbers[i];
+            newSearchHead.next = searchResult->head;
+            searchResult->head = &newSearchHead;
+            searchResult->count++;
+            i--;
+        }
+        if (i == 0)
+        {
+            //need to check the previous node starting at last key if i = 0 is a match
+            int next = node->next;
+            int_node_t *nextNode = convertFromIntToNode(next);
+            int beginIndex = nextNode->num_key_value_pairs - 1;
+            build_search_result(nextNode, key, beginIndex, searchResult);
+        }
+
+        // now search forwards from first key
+        i = firstKeyIndex + 1;
+
+        int num_keys = node->num_key_value_pairs;
+        while ((i< num_keys - 1) && node->keys[i] == key) {
+            search_node_t newSearchHead;
+            newSearchHead.fileNumber = node->fileNumbers[i];
+            newSearchHead.next = searchResult->head;
+            searchResult->head = &newSearchHead;
+            searchResult->count++;
+        }
+        if (i == num_keys - 1)
+        {
+            // need to check the next node starting at the first key if i=0 is a match
+            int next = node->next;
+            int_node_t *nextNode = convertFromIntToNode(next);
+            build_search_result(nextNode, key, 0, searchResult);
+        }
 
 }
 

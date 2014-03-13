@@ -155,3 +155,9 @@ int compare_nodes(const void *a, const void *b)
 {
     return (((int_node_t *)a)->keys[0] - ((int_node_t *)b)->keys[0]);
 }
+
+//TODO: replace this stub with the actual working method
+int_node_t *convertFromIntToNode(int fileNumber) {
+    int_node_t *node = (int_node_t *)malloc(sizeof(int_node_t));
+    return node;
+}
