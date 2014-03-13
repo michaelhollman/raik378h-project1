@@ -15,7 +15,7 @@ int main() {
 // but i don't, so take that, compiler!
 }
 
-search_result_t *search_int_tree(int_node_t *rootNode, int key) {
+search_result_t *search_int_tree(int_node_t *rootNode, int key, int tableType) {
 
    printf("Launching sort sequence...\n");
 
@@ -36,7 +36,7 @@ search_result_t *search_int_tree(int_node_t *rootNode, int key) {
         next = binary_search_int(nextNode, key);
         // make a node from the number of the next node
         // TODO: convertFromIntToNodeName doesn't do anything right now - needs implemented from how Michael fixed it
-        int_node_t *nextNode = convertFromIntToNode(next);
+        int_node_t *nextNode = read_node(next, tableType);
     }
 
     // now the node in next is a leaf. so binary search it to get the key!
@@ -80,6 +80,7 @@ void build_search_result(int_node_t *node, int key, int firstKeyIndex, search_re
 {
     // search backward from the key you found w/ binary search
         int i = firstKeyIndex - 1;
+        int tableType = node->tableType;
         while (i > 0 && node->keys[i] == key)
         {
             search_node_t newSearchHead;
@@ -93,7 +94,7 @@ void build_search_result(int_node_t *node, int key, int firstKeyIndex, search_re
         {
             //need to check the previous node starting at last key if i = 0 is a match
             int next = node->next;
-            int_node_t *nextNode = convertFromIntToNode(next);
+            int_node_t *nextNode = read_node(next, tableType);
             int beginIndex = nextNode->count - 1;
             build_search_result(nextNode, key, beginIndex, searchResult);
         }
@@ -113,7 +114,7 @@ void build_search_result(int_node_t *node, int key, int firstKeyIndex, search_re
         {
             // need to check the next node starting at the first key if i=0 is a match
             int next = node->next;
-            int_node_t *nextNode = convertFromIntToNode(next);
+            int_node_t *nextNode = read_node(next, tableType);
             build_search_result(nextNode, key, 0, searchResult);
         }
 
