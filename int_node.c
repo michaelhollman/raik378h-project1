@@ -633,6 +633,15 @@ int_node_t *search_for_node(int nodeFileNum, int tableType, int key)
     }
 }
 
+void print_search_result(search_result_t *searchResult)
+{
+    if (searchResult == NULL) {
+        fprintf(stderr, "The search result is NULL\n");
+        exit(0);
+    }
+    printf("Search result count: %i \n", searchResult->count);
+}
+
 void free_search_result(search_result_t *sr)
 {
     if(sr==NULL) {

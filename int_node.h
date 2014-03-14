@@ -71,6 +71,8 @@ search_result_t *search_bplus(int rootFileNum, int tableType, int key);
 // note: inclusive
 search_result_t *search_bplus_range(int rootFileNum, int tableType, int keyFrom, int keyTo);
 
+void print_search_result(search_result_t *searchResult);
+
 int_node_t *search_for_node(int nodeFileNum, int tableType, int key);
 
 void free_search_result(search_result_t *sr);
