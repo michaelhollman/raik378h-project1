@@ -8,13 +8,14 @@ int main()
 {
 
     bplus_roots_t *bpr = read_bplus_roots();
-    print_bplus_roots(bpr);
+    //print_bplus_roots(bpr);
     
     
-    search_bplus(bpr->timestamp, TABLE_TYPE_TIMESTAMP, 800);
+    search_bplus_range(bpr->user, TABLE_TYPE_USER, 4, 5);
     
     
     free_bplus_roots(bpr);
     
     return 0;
+    
 }
