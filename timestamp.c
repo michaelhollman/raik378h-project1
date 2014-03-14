@@ -61,7 +61,6 @@ timestamp_t *read_timestamp(int fileNum)
 void write_timestamp(int fileNum, timestamp_t *timestamp)
 {
     // set up file
-    mkdir("timestamps", 0777);
     FILE *fp;
     char filename[1024];
     sprintf(filename, "timestamps/timestamp_%08d.dat", fileNum);

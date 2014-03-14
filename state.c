@@ -63,7 +63,6 @@ state_t *read_state(int fileNum)
 void write_state(int fileNum, state_t *state)
 {
     // set up file
-    mkdir("states", 0777);
     FILE *fp;
     char filename[1024];
     sprintf(filename, "states/state_%08d.dat", fileNum);

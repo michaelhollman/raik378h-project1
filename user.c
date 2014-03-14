@@ -65,7 +65,6 @@ user_t *read_user(int fileNum)
 void write_user(int fileNum, user_t *user)
 {
     // set up file
-    mkdir("users", 0777);
     FILE *fp;
     char filename[1024];
     sprintf(filename, "users/user_%08d.dat", fileNum);

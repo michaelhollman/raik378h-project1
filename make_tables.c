@@ -3,6 +3,8 @@
 #include <sys/time.h>
 #include <string.h>
 #include <stdbool.h>
+#include <sys/stat.h>
+#include <sys/types.h>
 
 #include "record.h"
 #include "user.h"
@@ -48,6 +50,15 @@ int main(int argc, char **argv)
     // time the program
     struct timeval sysTimeStart, sysTimeEnd;
     gettimeofday(&sysTimeStart, NULL);
+
+    // set up directories;
+    mkdir("cities", 0777);
+    mkdir("datestamps", 0777);
+    mkdir("messages", 0777);
+    mkdir("states", 0777);
+    mkdir("timestamps", 0777);
+    mkdir("users", 0777);
+    mkdir("bplus", 0777);
 
     // set up some counters, etc.
     unsigned int recordCount = 0,

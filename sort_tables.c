@@ -16,7 +16,7 @@
 int main(int argc, char **argv)
 {
     printf("Sorting tables starting...\n");
-
+    
     // time the program
     struct timeval sysTimeStart, sysTimeEnd;
     gettimeofday(&sysTimeStart, NULL);
@@ -140,9 +140,10 @@ int main(int argc, char **argv)
     }
     
     // messages
-    // note: this sort is quite a bit different since we cant dump all 1.9 million messages into memory.
+    // note: this sort uses the heap
     {
         printf("Sorting %d messages\n", fc->messages);
+        
         
         // time this section
         struct timeval startSysTimeSub, endSysTimeSub;
@@ -150,30 +151,27 @@ int main(int argc, char **argv)
         
         // get count
         int count = fc->messages;
-        message_sort_t message_sorts[count];
+        message_t *messages = malloc(sizeof(message_t) * count);
         
-        // read into temp struct/array, rename file
+        // read
         for (i = 0; i < count; i++)
         {
-            message_t *msg = read_message(i);
-            presort_message(i);
-
-            message_sort_t tmp;
-            tmp.fileNum = i;
-            tmp.timestampId = msg->timestampId;
-            
-            message_sorts[i] = tmp;
-            free_message(msg);
+            message_t *tmp = read_message(i);
+            messages[i] = *tmp;
+            free_message(tmp);
         }
         
         // sort
-        qsort(message_sorts, count, sizeof(message_sorts[0]), compare_message_sorts);
+        qsort(messages, count, sizeof(messages[0]), compare_messages);
         
-        // rename back in sorted order
+        // write
         for (i = 0; i < count; i++)
         {
-            unpresort_message(message_sorts[i].fileNum, i);
+            write_message(i, &messages[i]);
+            //print_city(&cities[i]);
         }
+        
+        free(messages);
         
         // end timing this section
         gettimeofday(&endSysTimeSub, NULL);
@@ -181,7 +179,7 @@ int main(int argc, char **argv)
         + (endSysTimeSub.tv_usec - startSysTimeSub.tv_usec) / 1000000.0f;
         printf("Table process time %f seconds\n", totalTime);
     }
-
+    
     // timestamps
     {
         printf("Sorting %d timestamps\n", fc->timestamps);
@@ -256,7 +254,7 @@ int main(int argc, char **argv)
         + (endSysTimeSub.tv_usec - startSysTimeSub.tv_usec) / 1000000.0f;
         printf("Table process time %f seconds\n", totalTime);
     }
-         
+    
     free_file_count(fc);
     
     // end timing the program

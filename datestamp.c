@@ -64,7 +64,6 @@ datestamp_t *read_datestamp(int fileNum)
 void write_datestamp(int fileNum, datestamp_t *datestamp)
 {
     // set up file
-    mkdir("datestamps", 0777);
     FILE *fp;
     char filename[1024];
     sprintf(filename, "datestamps/datestamp_%08d.dat", fileNum);

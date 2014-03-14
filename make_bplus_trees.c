@@ -1,5 +1,7 @@
 #include <stdio.h>
 #include <sys/time.h>
+#include <sys/stat.h>
+#include <sys/types.h>
 
 #include "record.h"
 #include "user.h"
@@ -17,6 +19,8 @@ int main(int argc, char **argv)
     // time the program
     struct timeval sysTimeStart, sysTimeEnd;
     gettimeofday(&sysTimeStart, NULL);
+    
+    mkdir("bplus", 0777);
     
     int i;
     // open file count information

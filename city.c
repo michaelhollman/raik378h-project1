@@ -65,7 +65,6 @@ city_t *read_city(int fileNum)
 void write_city(int fileNum, city_t *city)
 {
     // set up file
-    mkdir("cities", 0777);
     FILE *fp;
     char filename[1024];
     sprintf(filename, "cities/city_%08d.dat", fileNum);

@@ -91,7 +91,6 @@ int_node_t *read_node(int fileNum, int tableType)
 
 void write_node(int fileNum, int_node_t *node) {
     // set up file
-    mkdir("bplus", 0777);
     FILE *fp;
     char filename[1024];
     filename_for_node(filename, node->tableType, fileNum);

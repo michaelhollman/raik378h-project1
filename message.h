@@ -25,16 +25,7 @@ void write_message(int fileNum, message_t *message);
 
 void free_message(message_t *message);
 
-// sorting wrapper
-typedef struct {
-    int fileNum;
-    int timestampId;
-} message_sort_t;
+int compare_messages(const void *a, const void *b);
 
-int compare_message_sorts(const void *a, const void *b);
-
-void presort_message(int fileNum);
-
-void unpresort_message(int presortFileNum, int newFileNum);
 
 #endif

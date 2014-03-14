@@ -62,7 +62,6 @@ message_t *read_message(int fileNum)
 void write_message(int fileNum, message_t *message)
 {
     // set up file
-    mkdir("messages", 0777);
     FILE *fp;
     char filename[1024];
     sprintf(filename, "messages/message_%08d.dat", fileNum);
@@ -94,56 +93,8 @@ void free_message(message_t *message)
     free(message);
 }
 
-int compare_message_sorts(const void *a, const void *b)
+int compare_messages(const void *a, const void *b)
 {
     // compare by timestampId
-    return (int) ((message_sort_t*)a)->timestampId - ((message_sort_t*)b)->timestampId;
+    return (int) ((message_t*)a)->timestampId - ((message_t*)b)->timestampId;
 }
-
-void presort_message(int fileNum)
-{
-    char old[1024];
-    sprintf(old, "messages/message_%08d.dat", fileNum);
-    char new[1024];
-    sprintf(new, "messages/presort_message_%08d.dat", fileNum);
-    rename(old, new);
-}
-
-message_t *read_presorted_message(int fileNum)
-{
-    // set up file
-    FILE *fp;
-    char filename[1024];
-    sprintf(filename, "messages/presort_message_%08d.dat", fileNum);
-    
-    // open file
-    fp = fopen(filename, "rb");
-    
-    if (!fp) {
-        fprintf(stderr, "Cannot open %s\n", filename);
-        exit(0);
-    }
-    
-    message_t *message = (message_t *)malloc(sizeof(message_t));
-    
-    // read message
-    fread(&(message->messageId), sizeof(int), 1, fp);
-    fread(&(message->userId), sizeof(int), 1, fp);
-    fread(&(message->timestampId), sizeof(int), 1, fp);
-    fread(&(message->datestampId), sizeof(int), 1, fp);
-    fread(&(message->text[0]), sizeof(char), TEXT_LONG, fp);
-    
-    fclose(fp);
-    
-    return message;
-}
-
-void unpresort_message(int presortFileNum, int newFileNum)
-{
-    char old[1024];
-    sprintf(old, "messages/presort_message_%08d.dat", presortFileNum);
-    char new[1024];
-    sprintf(new, "messages/message_%08d.dat", newFileNum);
-    rename(old, new);
-}
-

@@ -6,7 +6,7 @@
 #include <stdbool.h>
 
 // Change this value to adjust the fan-out of the b+ trees
-#define FAN_OUT         2
+#define FAN_OUT         200
 
 #define TEXT_SHORT      64
 #define TEXT_LONG       1024
