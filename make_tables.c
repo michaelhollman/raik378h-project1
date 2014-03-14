@@ -97,7 +97,7 @@ int main(int argc, char **argv)
     FILE *fp = NULL;
     for (i = 0; i < totalRecordNumber; i++) {
         //open the corresponding file
-        sprintf(filename, "../assignment_1/record_%06d.dat", i);
+        sprintf(filename, "record_%06d.dat", i);
         fp = fopen(filename,"rb");
         if (!fp) {
             fprintf(stderr, "Cannot open %s\n", filename);
