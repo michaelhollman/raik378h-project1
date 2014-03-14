@@ -23,7 +23,7 @@ int main(int argc, char **argv)
 
     bplus_roots_t *roots = read_bplus_roots();
     int stateRoot = roots->state;
-
+    printf("state root: %d", stateRoot);
     // find the leaf nodes that match Nebraska
     search_result_t *state_search_result = search_bplus(stateRoot, TABLE_TYPE_STATE, stateKey);
 

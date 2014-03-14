@@ -92,15 +92,11 @@ int main(int argc, char **argv)
 
     search_result_t *timestampSearchResult = search_bplus_range(timestampRoot, TABLE_TYPE_TIMESTAMP, startHash, endHash);
     print_search_result(timestampSearchResult);
-
-    if (state_search_result->count != 61) {
-        printf("We didn't find 61 separate minute id's. This is a bad");
-      //  return 0;
-    }
+    int timestamp_count = timestampSearchResult->count;
 
     search_result_node_t *timestamp_search_node = timestampSearchResult-> head;
 
-    for (int i = 0; i < 61; i ++){
+    for (int i = 0; i < timestamp_count; i ++){
        timestamp_t *timestamp = read_timestamp(timestamp_search_node->fileNumber);
        validTimes[i] = timestamp->timestampId;
        timestamp_search_node = timestamp_search_node->next;
@@ -109,7 +105,7 @@ int main(int argc, char **argv)
     free_search_result(timestampSearchResult);
 
     int finalCount = 0;
-    for (int i = 0; i < 61; i ++){
+    for (int i = 0; i < timestamp_count; i ++){
       search_result_t *message_search_result = search_bplus(messageRoot, TABLE_TYPE_MESSAGE,validTimes[i] );
       search_result_node_t *message_search_node = message_search_result-> head;
         for (int j = 0; j < message_search_result->count; j++){

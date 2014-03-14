@@ -3,13 +3,13 @@ all: make_tables sort_tables query_a query_b query_c query_d emancipate_tables e
 clean:; rm make_tables; rm sort_tables; rm query_a; rm query_b;  rm query_c; rm query_d; rm emancipate_tables; rm emancipate_bplus; rm make_bplus_trees; rm test;
 
 make_tables: make_tables.c user.c message.c timestamp.c datestamp.c city.c state.c record.c file_count.c; gcc -o make_tables make_tables.c user.c message.c timestamp.c datestamp.c city.c state.c record.c file_count.c -lm -std=c99
-sort_tables: sort_tables.c user.c message.c timestamp.c datestamp.c city.c state.c record.c file_count.c; gcc -o sort_tables sort_tables.c user.c message.c timestamp.c datestamp.c city.c state.c record.c file_count.c
+sort_tables: sort_tables.c user.c message.c timestamp.c datestamp.c city.c state.c record.c file_count.c; gcc -o sort_tables sort_tables.c user.c message.c timestamp.c datestamp.c city.c state.c record.c file_count.c -lm -std=c99
 
 
-query_a: query_a.c user.c message.c timestamp.c datestamp.c city.c state.c record.c file_count.c; gcc -o query_a query_a.c user.c message.c timestamp.c city.c state.c record.c file_count.c
-query_b: query_b.c user.c message.c timestamp.c datestamp.c city.c state.c record.c file_count.c; gcc -o query_b query_b.c user.c message.c timestamp.c city.c state.c record.c file_count.c
-query_c: query_c.c user.c message.c timestamp.c datestamp.c city.c state.c record.c file_count.c; gcc -o query_c query_c.c user.c message.c timestamp.c city.c state.c record.c file_count.c
-query_d: query_d.c user.c message.c timestamp.c datestamp.c city.c state.c record.c file_count.c; gcc -o query_d query_d.c user.c message.c timestamp.c city.c state.c record.c file_count.c
+query_a: query_a.c user.c message.c timestamp.c datestamp.c city.c state.c record.c file_count.c; gcc -o query_a query_a.c user.c message.c timestamp.c city.c state.c record.c file_count.c -lm -std=c99
+query_b: query_b.c user.c message.c timestamp.c datestamp.c city.c state.c record.c file_count.c; gcc -o query_b query_b.c user.c message.c timestamp.c city.c state.c record.c file_count.c -lm -std=c99
+query_c: query_c.c user.c message.c timestamp.c datestamp.c city.c state.c record.c file_count.c; gcc -o query_c query_c.c user.c message.c timestamp.c city.c state.c record.c file_count.c -lm -std=c99
+query_d: query_d.c user.c message.c timestamp.c datestamp.c city.c state.c record.c file_count.c; gcc -o query_d query_d.c user.c message.c timestamp.c city.c state.c record.c file_count.c -lm -std=c99
 
 
 refactored_query_a: refactored_query_a.c user.c message.c timestamp.c datestamp.c city.c state.c record.c file_count.c; gcc -o refactored_query_a query_a.c user.c message.c timestamp.c city.c state.c record.c file_count.c -lm -std=c99
@@ -31,4 +31,4 @@ emancipate_bplus: emancipate_bplus.c; gcc -o emancipate_bplus emancipate_bplus.c
 make_bplus_trees: make_bplus_trees.c int_node.c user.c message.c timestamp.c datestamp.c city.c state.c record.c file_count.c bplus_roots.c; gcc -o make_bplus_trees make_bplus_trees.c int_node.c user.c message.c timestamp.c datestamp.c city.c state.c record.c file_count.c bplus_roots.c -lm -std=c99
 
 
-test: test.c int_node.c user.c message.c timestamp.c datestamp.c city.c state.c record.c file_count.c bplus_roots.c; gcc -o test test.c int_node.c user.c message.c timestamp.c datestamp.c city.c state.c record.c file_count.c bplus_roots.c
+test: test.c int_node.c user.c message.c timestamp.c datestamp.c city.c state.c record.c file_count.c bplus_roots.c; gcc -o test test.c int_node.c user.c message.c timestamp.c datestamp.c city.c state.c record.c file_count.c bplus_roots.c -lm -std=c99
