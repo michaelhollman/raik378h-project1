@@ -8,12 +8,6 @@
 #include "search_result.h"
 #include "search_node.h"
 #include "search_tree.h"
-#include "node.h"
-
-int main() {
-// if I wanted to run the program I could here.
-// but i don't, so take that, compiler!
-}
 
 search_result_t *search_int_tree(int_node_t *rootNode, int key, int tableType) {
 

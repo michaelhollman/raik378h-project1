@@ -21,7 +21,7 @@ void print_state(state_t *state)
         fprintf(stderr, "The state is NULL\n");
         exit(0);
     }
-    
+
     // print state
     printf("state: %08d\n", state->stateId);
     printf("\t%-12s: %s\n", "name", state->name);
@@ -33,30 +33,30 @@ state_t *read_state(int fileNum)
     FILE *fp;
     char filename[1024];
     sprintf(filename, "states/state_%08d.dat", fileNum);
-    
+
     // open file
     fp = fopen(filename, "rb");
-    
+
     if (!fp) {
         fprintf(stderr, "Cannot open %s\n", filename);
         exit(0);
     }
-    
+
     // allocate memory for the record
     state_t *state = (state_t *)malloc(sizeof(state_t));
-    
+
     // memory error
     if (state == NULL) {
         fprintf(stderr, "Cannot allocate memory for state.\n");
         exit(0);
     }
-    
+
     // read state
     fread(&(state->stateId), sizeof(int), 1, fp);
     fread(&(state->name[0]), sizeof(char), TEXT_SHORT, fp);
-    
+
     fclose(fp);
-    
+
     return state;
 }
 
@@ -67,7 +67,7 @@ void write_state(int fileNum, state_t *state)
     FILE *fp;
     char filename[1024];
     sprintf(filename, "states/state_%08d.dat", fileNum);
-    
+
     // open file
     fp = fopen(filename, "wb");
     if (!fp)
@@ -75,11 +75,11 @@ void write_state(int fileNum, state_t *state)
         printf("Unable to open file.");
         return;
     }
-    
+
     // write user
     fwrite(&(state->stateId), sizeof(int), 1, fp);
     fwrite(&(state->name[0]), sizeof(char), TEXT_SHORT, fp);
-    
+
     fclose(fp);
 }
 
@@ -88,7 +88,7 @@ void free_state(state_t *state)
     if (state == NULL) {
         return;
     }
-    
+
     free(state);
 }
 
@@ -100,15 +100,15 @@ int compare_states(const void *a, const void *b)
 unsigned long hash_state(state_t *state)
 {
     char *str = state->name;
-    
+
     int len, l, z, base, correction;
     len = strlen(str);
     l = (len > 6) ? 6 : len;
     correction = 0;
-    
+
     unsigned long hash = 0;
     char c;
-    
+
     for(z = 0; z < l; z++){
         c = tolower(str[z + correction]);
         int num = ((int)c) - 97;
