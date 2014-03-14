@@ -109,6 +109,18 @@
       <FileRef
          location = "container:../../Desktop/raik378h-project1/refactored_query_d.c">
       </FileRef>
+      <FileRef
+         location = "group:bplus_query_a.c">
+      </FileRef>
+      <FileRef
+         location = "group:bplus_query_b.c">
+      </FileRef>
+      <FileRef
+         location = "group:bplus_query_c.c">
+      </FileRef>
+      <FileRef
+         location = "group:bplus_query_d.c">
+      </FileRef>
    </Group>
    <Group
       location = "container:"

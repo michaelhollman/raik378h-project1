@@ -16,8 +16,8 @@ int main(int argc, char **argv)
     
     // counters, etc.
     int first, mid, last, i,
-        nebraskaUserCount = 0,
-        nebraskaStateId;
+    nebraskaUserCount = 0,
+    nebraskaStateId;
     char nebraskaStr[] = "Nebraska";
     
     // get file counts

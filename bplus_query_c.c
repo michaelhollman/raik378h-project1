@@ -24,98 +24,98 @@ int main(int argc, char **argv)
 	int timestampCount = fc->timestamps;
     int userCount = fc->users;
     free_file_count(fc);
-
-    // arrays to keep track of valid times and counted users
-	int validTimes[61]; //There can only be 61 times
-	int validTimesCount = 0;
+    
+    // get b+ roots
+    bplus_roots_t *bpr = read_bplus_roots();
+    int stateRoot = bpr->state;
+    int userRoot = bpr ->user;
+    int timestampRoot = bpr->timestamp;
+    int messageRoot = bpr->message;
+    free_bplus_roots(bpr);
+    
+    // array to keep track of counted users
 	bool countedUsers[userCount];
 	for (int i = 0; i < userCount; i ++)
     {
 		countedUsers[i] = false;
 	}
 
-
-//find nebraska id
-	state_t *fakeState = (state_t *)malloc(sizeof(state_t));
+    // get the hash for "Nebraska"
+    state_t *fakeState = (state_t *)malloc(sizeof(state_t));
     sprintf(fakeState->name, "Nebraska");
-
-    unsigned long stateKey = hash_state(fakeState);
+    int stateKey = (int) hash_state(fakeState);
     free_state(fakeState);
-
-    bplus_roots_t *roots = read_bplus_roots();
-    int stateRoot = roots->state;
-    int messageRoot = roots ->message;
-    int userRoot = roots ->user;
-    int timestampRoot = roots->timestamp;
-
-    // find the leaf nodes that match Nebraska
-    search_result_t *state_search_result = search_bplus(stateRoot, TABLE_TYPE_STATE, stateKey);
-
-
-    if (state_search_result->count != 1) {
-        printf("We found more than 1 Nebraska ID. This is problematic.");
-        return 0;
+    
+    // query state b+ tree for nebraska state
+    search_result_t *stateSearchResult = search_bplus(stateRoot, TABLE_TYPE_STATE, stateKey);
+    
+    if (stateSearchResult->count != 1)
+    {
+        printf("WARNING: We found !1 states matching Nebraska. This is problematic.\n");
     }
-
-    search_result_node_t *state_search_node = state_search_result-> head;
-    state_t *state = read_state(state_search_node->fileNumber);
+    
+    // get Nebraska's stateId
+    state_t *state = read_state(stateSearchResult->head->fileNumber);
     int nebraskaId = state->stateId;
-
+    
+    // get and mark users from Nebraska as countable
     search_result_t *userSearchResult = search_bplus(userRoot,TABLE_TYPE_USER, nebraskaId);
-    search_result_node_t *user_search_node = userSearchResult->head;
+    search_result_node_t *uSearchNode = userSearchResult->head;
 
-    for (int i = 0; i < userSearchResult->count;i++){
-        user_t *user = read_user(user_search_node->fileNumber);
+    for (; uSearchNode != NULL; uSearchNode = uSearchNode->next)
+    {
+        user_t *user = read_user(uSearchNode->fileNumber);
         countedUsers[user->userId] = true;
-        user_search_node = user_search_node->next;
         free_user(user);
     }
 
-//find valid timestamps
-
-    timestamp_t *startTime = (timestamp_t *)malloc(sizeof(timestamp_t));
-    startTime->hour = 8;
-    startTime->minute = 0;
-
-    timestamp_t *endTime = (timestamp_t *)malloc(sizeof(timestamp_t));
-    endTime->hour = 9;
-    endTime->minute = 0;
-
-    unsigned long startHash = hash_timestamp(startTime);
-    unsigned long endHash = hash_timestamp(endTime);
-
-    free_timestamp(endTime);
-    free_timestamp(startTime);
-
-    search_result_t *timestampSearchResult = search_bplus_range(timestampRoot, TABLE_TYPE_TIMESTAMP, startHash, endHash);
-    print_search_result(timestampSearchResult);
-    int timestamp_count = timestampSearchResult->count;
-
-    search_result_node_t *timestamp_search_node = timestampSearchResult-> head;
-
-    for (int i = 0; i < timestamp_count; i ++){
-       timestamp_t *timestamp = read_timestamp(timestamp_search_node->fileNumber);
-       validTimes[i] = timestamp->timestampId;
-       timestamp_search_node = timestamp_search_node->next;
-       free_timestamp(timestamp);
+    // timestamps are hashed into ints as HHMM
+    int startTime = 800;
+    int endTime = 900;
+    
+    // query for timestamps between 8 and 9 (incusive)
+    search_result_t *timestampSearchResult = search_bplus_range(timestampRoot, TABLE_TYPE_TIMESTAMP, startTime, endTime);
+    if (timestampSearchResult->count != 61)
+    {
+        printf("WARNING: didn't find 61 separate timestamps. Did something go wrong?\n");
     }
-    free_search_result(timestampSearchResult);
+    
+    // convert linked list of timestamp file numbers into array of timestamp ids
+    int validTimeIds[timestampSearchResult->count];
+    search_result_node_t *tsSearchNode = timestampSearchResult->head;
+    for (int i = 0; i < timestampSearchResult->count; i ++)
+    {
+        timestamp_t *timestamp = read_timestamp(tsSearchNode->fileNumber);
+        validTimeIds[i] = timestamp->timestampId;
+        tsSearchNode = tsSearchNode->next;
+        free_timestamp(timestamp);
+    }
 
-    int finalCount = 0;
-    for (int i = 0; i < timestamp_count; i ++){
-      search_result_t *message_search_result = search_bplus(messageRoot, TABLE_TYPE_MESSAGE,validTimes[i] );
-      search_result_node_t *message_search_node = message_search_result-> head;
-        for (int j = 0; j < message_search_result->count; j++){
-            message_t *message = read_message(message_search_node ->fileNumber);
-            if (countedUsers[message->userId]){
+    // for each timestamp id, query the message tree to get messages with that timestamp id
+    int finalUserCount = 0;
+    for (int i = 0; i < timestampSearchResult->count; i ++)
+    {
+        search_result_t *messageSearchResult = search_bplus(messageRoot, TABLE_TYPE_MESSAGE, validTimeIds[i]);
+        search_result_node_t *mSearchNode = messageSearchResult-> head;
+        
+        // loop over all the matching messages
+        for(; mSearchNode != NULL; mSearchNode = mSearchNode->next)
+        {
+            message_t *message = read_message(mSearchNode->fileNumber);
+            // if countedUsers value is true, means user is from Nebraska and hasn't been counted yet
+            if (countedUsers[message->userId])
+            {
                 countedUsers[message->userId] = false;
-                finalCount++;
+                finalUserCount++;
             }
             free_message(message);
         }
-            free_search_result(message_search_result);
+        free_search_result(messageSearchResult);
     }
-    printf("Number of matching users: %d\n", finalCount);
+
+    free_search_result(timestampSearchResult);
+    
+    printf("Number of matching users: %d\n", finalUserCount);
 
     // end timing the program
     gettimeofday(&sysTimeEnd, NULL);
