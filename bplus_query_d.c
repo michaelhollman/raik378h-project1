@@ -23,18 +23,16 @@ int main(int argc, char **argv)
     int messageCount = fc->messages;
 	int timestampCount = fc->timestamps;
     int userCount = fc->users;
-    int maxCount = 0;
-    int maxUserID = 0;
+
     free_file_count(fc);
 
-    // arrays to keep track of valid times and counted users
-	int validTimes[61]; //There can only be 61 times
-	int validTimesCount = 0;
+    // arrays to keep track of counted users
 	bool countedUsers[userCount];
 	int userMessageCount[userCount];
 	for (int i = 0; i < userCount; i ++)
     {
 		countedUsers[i] = false;
+		userMessageCount[i] = 0;
 	}
 
 
@@ -93,27 +91,35 @@ int main(int argc, char **argv)
     search_result_t *timestampSearchResult = search_bplus_range(timestampRoot, TABLE_TYPE_TIMESTAMP, startHash, endHash);
     print_search_result(timestampSearchResult);
     int timestamp_count = timestampSearchResult->count;
+    int validTimes[timestamp_count]; //There can only be 61 times if we go from 8:00 to 9:00
 
     search_result_node_t *timestamp_search_node = timestampSearchResult-> head;
 
-    for (int i = 0; i < timestamp_count; i ++){
+    for (int i = 0; i < timestamp_count; i ++)
+    {
        timestamp_t *timestamp = read_timestamp(timestamp_search_node->fileNumber);
        validTimes[i] = timestamp->timestampId;
        timestamp_search_node = timestamp_search_node->next;
        free_timestamp(timestamp);
     }
+
     free_search_result(timestampSearchResult);
 
-    int finalCount = 0;
-    for (int i = 0; i < timestamp_count; i ++){
-      search_result_t *message_search_result = search_bplus(messageRoot, TABLE_TYPE_MESSAGE,validTimes[i] );
+    int maxUserID = 0;
+    int maxMessageCount = 0;
+
+    for (int i = 0; i < timestamp_count; i++)
+    {
+      search_result_t *message_search_result = search_bplus(messageRoot, TABLE_TYPE_MESSAGE, validTimes[i]);
       search_result_node_t *message_search_node = message_search_result-> head;
+
         for (int j = 0; j < message_search_result->count; j++){
             message_t *message = read_message(message_search_node ->fileNumber);
             if (countedUsers[message->userId]){
                 userMessageCount[message->userId] += 1;
-                if (userMessageCount[message->userId]){
-                    maxCount = userMessageCount[message->userId];
+                if (userMessageCount[message->userId] > maxMessageCount){
+                    printf("Supposed message count: %d", userMessageCount[message->userId]);
+                    maxMessageCount = userMessageCount[message->userId];
                     maxUserID = message->userId;
                 }
             }
@@ -121,7 +127,7 @@ int main(int argc, char **argv)
         }
             free_search_result(message_search_result);
     }
-    printf("Max Count: %d\n Max User: %d\n", maxCount,maxUserID);
+    printf("Max number of messages: %d\n, sent by User ID %d\n", maxMessageCount,maxUserID);
 
     // end timing the program
     gettimeofday(&sysTimeEnd, NULL);
