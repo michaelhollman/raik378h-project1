@@ -647,9 +647,16 @@ void free_search_result(search_result_t *sr)
     if(sr==NULL) {
         return;
     }
+
+    search_result_node_t *srNode = sr->head;
+
+    while (srNode != NULL)
+    {
+        search_result_node_t *tmp = srNode;
+        srNode = srNode->next;
+        free (tmp);
+    }
+
     free(sr);
-
-    // TODO free linked list
-
 }
 
