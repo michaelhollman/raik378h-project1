@@ -172,7 +172,6 @@ void insert_node_internal(insert_result_t *result, int nodeFileNum, int tableTyp
     // open this current node
     int_node_t *node = read_node(nodeFileNum, tableType);
     
-    
     // LEAF NODE
     if (node->nodeType == NODE_TYPE_LEAF)
     {
@@ -194,7 +193,7 @@ void insert_node_internal(insert_result_t *result, int nodeFileNum, int tableTyp
             newNode.next = node->next;
             newNode.previous = nodeFileNum;
             node->next = newNodeFileNum;
-
+            
             newNode.tableType = tableType;
             newNode.nodeType = NODE_TYPE_LEAF;
             newNode.firstFile = -1;
@@ -227,6 +226,7 @@ void insert_node_internal(insert_result_t *result, int nodeFileNum, int tableTyp
             
             // this has +1 because we want to round up
             int mid = (tempArraySize + 1) / 2;
+            
             node->count = mid;
             newNode.count = tempArraySize - mid;
             
@@ -263,7 +263,7 @@ void insert_node_internal(insert_result_t *result, int nodeFileNum, int tableTyp
             // write both nodes
             write_node(nodeFileNum, node);
             write_node(newNodeFileNum, &newNode);
-
+            
             // modify result
             result->didSplit = true;
             result->newKey = newNode.keys[0];
@@ -328,7 +328,7 @@ void insert_node_internal(insert_result_t *result, int nodeFileNum, int tableTyp
             }
             // at this point, `last` will be moved to correspond with the key that points to the correct file.... I think. hopefully.
             int match = (found == -1) ? last : found;
-
+            
             // insert into appropriate child
             insert_node_internal(result, node->files[match], tableType, newKeyToInsert, newFileNumToInsert);
         }
@@ -447,7 +447,7 @@ void insert_node_internal(insert_result_t *result, int nodeFileNum, int tableTyp
                 
                 // re-write node
                 write_node(nodeFileNum, node);
-
+                
                 // modify result
                 result->didSplit = false;
                 result->newKey = -1;
@@ -572,7 +572,7 @@ search_result_t *search_bplus_range(int rootFileNum, int tableType, int keyFrom,
     while (needToLookAtNextNode == 1 && nextNodeNum != -1)
     {
         int_node_t *nextNode = read_node(nextNodeNum, tableType);
-    
+        
         int i = 0;
         while (nextNode->keys[i] <= keyTo && i < nextNode->count)
         {
@@ -581,9 +581,7 @@ search_result_t *search_bplus_range(int rootFileNum, int tableType, int keyFrom,
             srnode->fileNumber = nextNode->files[i];
             srnode->next = result->head;
             result->head = srnode;
-            
             i++;
-            
         }
         
         // if i = count, we still need to look at the previous node
@@ -634,11 +632,20 @@ int_node_t *search_for_node(int nodeFileNum, int tableType, int key)
             }
         }
         int match = (found == -1) ? last : found;
-        
         int nextFile = node->files[match];
+        
         free_node(node);
         return search_for_node(nextFile, tableType, key);
     }
+}
+
+void print_search_result(search_result_t *searchResult)
+{
+    if (searchResult == NULL) {
+        fprintf(stderr, "The search result is NULL\n");
+        exit(0);
+    }
+    printf("Search result count: %i \n", searchResult->count);
 }
 
 void free_search_result(search_result_t *sr)
@@ -646,9 +653,16 @@ void free_search_result(search_result_t *sr)
     if(sr==NULL) {
         return;
     }
+    
+    search_result_node_t *srNode = sr->head;
+    
+    while (srNode != NULL)
+    {
+        search_result_node_t *tmp = srNode;
+        srNode = srNode->next;
+        free (tmp);
+    }
+    
     free(sr);
-    
-    // TODO free linked list
-    
 }
 
