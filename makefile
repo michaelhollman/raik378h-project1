@@ -12,10 +12,10 @@ query_c: query_c.c user.c message.c timestamp.c datestamp.c city.c state.c recor
 query_d: query_d.c user.c message.c timestamp.c datestamp.c city.c state.c record.c file_count.c; gcc -o query_d query_d.c user.c message.c timestamp.c city.c state.c record.c file_count.c
 
 
-refactored_query_a: refactored_query_a.c user.c message.c timestamp.c datestamp.c city.c state.c record.c file_count.c; gcc -o refactored_query_a query_a.c user.c message.c timestamp.c city.c state.c record.c file_count.c
-refactored_query_b: refactored_query_b.c user.c message.c timestamp.c datestamp.c city.c state.c record.c file_count.c; gcc -o refactored_query_b query_b.c user.c message.c timestamp.c city.c state.c record.c file_count.c
-refactored_query_c: refactored_query_c.c user.c message.c timestamp.c datestamp.c city.c state.c record.c file_count.c; gcc -o refactored_query_c query_c.c user.c message.c timestamp.c city.c state.c record.c file_count.c
-refactored_query_d: refactored_query_d.c user.c message.c timestamp.c datestamp.c city.c state.c record.c file_count.c; gcc -o refactored_query_d query_d.c user.c message.c timestamp.c city.c state.c record.c file_count.c
+refactored_query_a: refactored_query_a.c user.c message.c timestamp.c datestamp.c city.c state.c record.c file_count.c; gcc -o refactored_query_a query_a.c user.c message.c timestamp.c city.c state.c record.c file_count.c -lm -std=c99
+refactored_query_b: refactored_query_b.c user.c message.c timestamp.c datestamp.c city.c state.c record.c file_count.c; gcc -o refactored_query_b query_b.c user.c message.c timestamp.c city.c state.c record.c file_count.c -lm -std=c99
+refactored_query_c: refactored_query_c.c user.c message.c timestamp.c datestamp.c city.c state.c record.c file_count.c; gcc -o refactored_query_c query_c.c user.c message.c timestamp.c city.c state.c record.c file_count.c -lm -std=c99
+refactored_query_d: refactored_query_d.c user.c message.c timestamp.c datestamp.c city.c state.c record.c file_count.c; gcc -o refactored_query_d query_d.c user.c message.c timestamp.c city.c state.c record.c file_count.c -lm -std=c99
 
 bplus_query_a: bplus_query_a.c int_node.c bplus_roots.c state.c; gcc -o bplus_query_a bplus_roots.c bplus_query_a.c int_node.c state.c -lm -std=c99
 bplus_query_b: bplus_query_b.c int_node.c bplus_roots.c timestamp.c file_count.c message.c; gcc -o bplus_query_b bplus_query_b.c int_node.c bplus_roots.c timestamp.c file_count.c message.c -lm -std=c99

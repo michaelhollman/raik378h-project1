@@ -84,12 +84,15 @@ int main(int argc, char **argv)
     unsigned long startHash = hash_timestamp(startTime);
     unsigned long endHash = hash_timestamp(endTime);
 
+    free_timestamp(endTime);
+    free_timestamp(startTime);
+
     search_result_t *timestampSearchResult = search_bplus_range(timestampRoot, TABLE_TYPE_TIMESTAMP, startHash, endHash);
     print_search_result(timestampSearchResult);
 
     if (state_search_result->count != 61) {
         printf("We didn't find 61 separate minute id's. This is a bad");
-        return 0;
+       // return 0;
     }
 
     search_result_node_t *timestamp_search_node = timestampSearchResult-> head;
