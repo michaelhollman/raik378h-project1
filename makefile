@@ -1,4 +1,4 @@
-all: make_tables sort_tables query_a query_b query_c query_d bplus_query_a emancipate_tables emancipate_bplus make_bplus_trees
+all: make_tables sort_tables query_a query_b query_c query_d emancipate_tables emancipate_bplus make_bplus_trees
 
 clean:; rm make_tables; rm sort_tables; rm query_a; rm query_b;  rm query_c; rm query_d; rm emancipate_tables; rm emancipate_bplus; rm make_bplus_trees; rm test;
 
@@ -17,7 +17,6 @@ refactored_query_b: refactored_query_b.c user.c message.c timestamp.c datestamp.
 refactored_query_c: refactored_query_c.c user.c message.c timestamp.c datestamp.c city.c state.c record.c file_count.c; gcc -o refactored_query_c query_c.c user.c message.c timestamp.c city.c state.c record.c file_count.c
 refactored_query_d: refactored_query_d.c user.c message.c timestamp.c datestamp.c city.c state.c record.c file_count.c; gcc -o refactored_query_d query_d.c user.c message.c timestamp.c city.c state.c record.c file_count.c
 
-bplus_query_a: bplus_query_a.c int_node.c search_tree.c state.c; gcc -o bplus_query_a bplus_query_a.c int_node.c search_tree.c state.c -lm
 
 emancipate_tables: emancipate_tables.c; gcc -o emancipate_tables emancipate_tables.c
 emancipate_bplus: emancipate_bplus.c; gcc -o emancipate_bplus emancipate_bplus.c

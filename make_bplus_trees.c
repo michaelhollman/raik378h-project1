@@ -62,6 +62,42 @@ int main(int argc, char **argv)
         printf("B+ tree creation time:  %f seconds\n", totalTime);
     }
     
+    // cities
+    {
+        printf("\n");
+        printf("Making city B+ tree with %d cities\n", fc->cities);
+        
+        // time this section
+        struct timeval startSysTimeSub, endSysTimeSub;
+        gettimeofday(&startSysTimeSub, NULL);
+        
+        // create root
+        int_node_t root;
+        root.next = -1;
+        root.previous = -1;
+        root.tableType = TABLE_TYPE_CITY;
+        root.nodeType = NODE_TYPE_LEAF;
+        root.count = 0;
+        root.firstFile = -1;
+        write_node(0, &root);
+        
+        int rootFileNum = 0;
+        
+        for (i = 0; i < fc->cities; i++)
+        {
+            city_t *city = read_city(i);
+            rootFileNum = insert_node(rootFileNum, TABLE_TYPE_CITY, city->stateId, i);
+            free_city(city);
+        }
+        
+        bpr.city = rootFileNum;
+        
+        // end timing this section
+        gettimeofday(&endSysTimeSub, NULL);
+        float totalTime = (endSysTimeSub.tv_sec - startSysTimeSub.tv_sec)
+        + (endSysTimeSub.tv_usec - startSysTimeSub.tv_usec) / 1000000.0f;
+        printf("B+ tree creation time:  %f seconds\n", totalTime);
+    }
     
     //states
     {
@@ -92,44 +128,6 @@ int main(int argc, char **argv)
         }
         
         bpr.state = rootFileNum;
-        
-        // end timing this section
-        gettimeofday(&endSysTimeSub, NULL);
-        float totalTime = (endSysTimeSub.tv_sec - startSysTimeSub.tv_sec)
-        + (endSysTimeSub.tv_usec - startSysTimeSub.tv_usec) / 1000000.0f;
-        printf("B+ tree creation time:  %f seconds\n", totalTime);
-    }
-    
-    
-    // cities
-    {
-        printf("\n");
-        printf("Making city B+ tree with %d cities\n", fc->cities);
-        
-        // time this section
-        struct timeval startSysTimeSub, endSysTimeSub;
-        gettimeofday(&startSysTimeSub, NULL);
-        
-        // create root
-        int_node_t root;
-        root.next = -1;
-        root.previous = -1;
-        root.tableType = TABLE_TYPE_CITY;
-        root.nodeType = NODE_TYPE_LEAF;
-        root.count = 0;
-        root.firstFile = -1;
-        write_node(0, &root);
-        
-        int rootFileNum = 0;
-        
-        for (i = 0; i < fc->cities; i++)
-        {
-            city_t *city = read_city(i);
-            rootFileNum = insert_node(rootFileNum, TABLE_TYPE_CITY, city->stateId, i);
-            free_city(city);
-        }
-        
-        bpr.city = rootFileNum;
         
         // end timing this section
         gettimeofday(&endSysTimeSub, NULL);
