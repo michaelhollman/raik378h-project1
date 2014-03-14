@@ -44,7 +44,7 @@ int main(int argc, char **argv)
     }
     //get total record number from argument
     int totalRecordNumber = atoi(argv[1]);
-    
+
     // time the program
     struct timeval sysTimeStart, sysTimeEnd;
     gettimeofday(&sysTimeStart, NULL);
@@ -58,7 +58,7 @@ int main(int argc, char **argv)
     datestampCount = 0,
     messageCount = 0,
     i,j;
-    
+
     // SET UP HASH TABLES FOR CITIES, STATES, TIMESTAMPS, DATESTAMPS
     // cities
     city_node *cityHT[HASH_SIZE];
@@ -67,7 +67,7 @@ int main(int argc, char **argv)
         cityHT[i] = malloc(sizeof(city_node));
         cityHT[i] = NULL;
     }
-    
+
     // states
     state_node *stateHT[HASH_SIZE];
     for (i = 0; i < HASH_SIZE; i++)
@@ -75,7 +75,7 @@ int main(int argc, char **argv)
         stateHT[i] = malloc(sizeof(state_node));
         stateHT[i] = NULL;
     }
-    
+
     // timestamps
     timestamp_node *timestampHT[HASH_SIZE];
     for (i = 0; i < HASH_SIZE; i++)
@@ -83,7 +83,7 @@ int main(int argc, char **argv)
         timestampHT[i] = malloc(sizeof(timestamp_node));
         timestampHT[i] = NULL;
     }
-    
+
     // datestamps
     datestamp_node *datestampHT[HASH_SIZE];
     for (i = 0; i < HASH_SIZE; i++)
@@ -91,24 +91,24 @@ int main(int argc, char **argv)
         datestampHT[i] = malloc(sizeof(datestamp_node));
         datestampHT[i] = NULL;
     }
-    
+
     // LOOP OVER RECORD FILES
     char filename[1024];
     FILE *fp = NULL;
     for (i = 0; i < totalRecordNumber; i++) {
         //open the corresponding file
-        sprintf(filename, "record_%06d.dat", i);
+        sprintf(filename, "../assignment_1/record_%06d.dat", i);
         fp = fopen(filename,"rb");
         if (!fp) {
             fprintf(stderr, "Cannot open %s\n", filename);
             continue;
         }
         record_t *record = read_record(fp);
-        
+
         // split location into city and state, as best we can
         char cityStr[TEXT_SHORT];
         char stateStr[TEXT_SHORT];
-        
+
         // there's one record where the location is \0, which strtok breaks on
         if (record->location[0] == '\0')
         {
@@ -122,11 +122,11 @@ int main(int argc, char **argv)
             strncpy(cityStr, strtok(loc, ","), TEXT_SHORT);
             strncpy(stateStr, strtok(NULL, ","), TEXT_SHORT);
         }
-        
+
         // create state
         state_t state;
         strncpy(state.name, stateStr, TEXT_SHORT);
-        
+
         // get stateId from hash if we have it already
         unsigned int stateHash = hash_state(&state) % HASH_SIZE;
         state_node *s;
@@ -138,7 +138,7 @@ int main(int argc, char **argv)
                 stateId = s->state.stateId;
             }
         }
-        
+
         // assign stateId, add to hash table, and write file if we don't have it
         if (stateId == -1)
         {
@@ -146,18 +146,18 @@ int main(int argc, char **argv)
             stateId = stateCount;
             write_state(stateCount, &state);
             stateCount++;
-            
+
             s = malloc(sizeof(state_node));
             s->state = state;
             s->next = stateHT[stateHash];
             stateHT[stateHash] = s;
         }
-        
+
         // create city
         city_t city;
         city.stateId = stateId;
         strncpy(city.name, cityStr, TEXT_SHORT);
-        
+
         // get cityId from hash if we have it already
         unsigned int cityHash = hash_city(&city) % HASH_SIZE;
         city_node *c;
@@ -169,7 +169,7 @@ int main(int argc, char **argv)
                 cityId = c->city.cityId;
             }
         }
-        
+
         // assign cityId, add to hash table, and write file if we don't have it
         if (cityId == -1)
         {
@@ -177,13 +177,13 @@ int main(int argc, char **argv)
             cityId = cityCount;
             write_city(cityCount, &city);
             cityCount++;
-            
+
             c = malloc(sizeof(city_node));
             c->city = city;
             c->next = cityHT[cityHash];
             cityHT[cityHash] = c;
         }
-        
+
         // create and write user
         user_t user;
         user.userId = record->id;
@@ -192,14 +192,14 @@ int main(int argc, char **argv)
         strncpy(user.name, record->name, TEXT_SHORT);
         write_user(userCount, &user);
         userCount++;
-        
+
         // loop over messages
         for(j = 0; j < record->message_num; j++) {
             // create timestamp
             timestamp_t timestamp;
             timestamp.hour = record->messages[j].hour;
             timestamp.minute = record->messages[j].minute;
-            
+
             // get timestampId from hash if we have it already
             unsigned int timestampHash = hash_timestamp(&timestamp) % HASH_SIZE;
             timestamp_node *t;
@@ -211,7 +211,7 @@ int main(int argc, char **argv)
                     tsId = t->timestamp.timestampId;
                 }
             }
-            
+
             // assign timestampId, add to hash table, and write file if we don't have it
             if (tsId == -1)
             {
@@ -219,19 +219,19 @@ int main(int argc, char **argv)
                 tsId = timestampCount;
                 write_timestamp(timestampCount, &timestamp);
                 timestampCount++;
-                
+
                 t = malloc(sizeof(timestamp_node));
                 t->timestamp = timestamp;
                 t->next = timestampHT[timestampHash];
                 timestampHT[timestampHash] = t;
             }
-            
+
             // create datestamp
             datestamp_t datestamp;
             datestamp.year = record->messages[j].year;
             datestamp.month = record->messages[j].month;
             datestamp.day = record->messages[j].day;
-            
+
             // get datestampId from hash if we have it already
             unsigned int datestampHash = hash_datestamp(&datestamp) % HASH_SIZE;
             datestamp_node *d;
@@ -243,7 +243,7 @@ int main(int argc, char **argv)
                     dsId = d->datestamp.datestampId;
                 }
             }
-            
+
             // assign datestampId, add to hash table, and write file if we don't have it
             if (dsId == -1)
             {
@@ -251,13 +251,13 @@ int main(int argc, char **argv)
                 dsId = datestampCount;
                 write_datestamp(datestampCount, &datestamp);
                 datestampCount++;
-                
+
                 d = malloc(sizeof(datestamp_node));
                 d->datestamp = datestamp;
                 d->next = datestampHT[datestampHash];
                 datestampHT[datestampHash] = d;
             }
-            
+
             // create and write message
             message_t message;
             strncpy(message.text, record->messages[j].text, TEXT_LONG);
@@ -265,16 +265,16 @@ int main(int argc, char **argv)
             message.timestampId = tsId;
             message.datestampId = dsId;
             message.messageId = messageCount;
-            
+
             write_message(messageCount, &message);
             messageCount++;
         }
-        
+
         // free and close record
         free_record(record);
         fclose(fp);
     }
-    
+
     // free city nodes
     city_node *cNode;
     for (i = 0; i < HASH_SIZE; i++)
@@ -287,7 +287,7 @@ int main(int argc, char **argv)
     		free (tmp);
     	}
     }
-    
+
     // free state nodes
     state_node *sNode;
     for (i = 0; i < HASH_SIZE; i++)
@@ -300,7 +300,7 @@ int main(int argc, char **argv)
     		free (tmp);
     	}
     }
-    
+
     // free timestamp nodes
     timestamp_node *tNode;
     for (i = 0; i < HASH_SIZE; i++)
@@ -313,7 +313,7 @@ int main(int argc, char **argv)
     		free (tmp);
     	}
     }
-    
+
     // free datestamp nodes
     datestamp_node *dNode;
     for (i = 0; i < HASH_SIZE; i++)
@@ -326,7 +326,7 @@ int main(int argc, char **argv)
     		free (tmp);
     	}
     }
-    
+
     // create, write, print file count information file
     file_count_t fc;
     fc.users = userCount;
@@ -335,15 +335,15 @@ int main(int argc, char **argv)
     fc.messages = messageCount;
     fc.timestamps = timestampCount;
     fc.datestamps = datestampCount;
-    
+
     write_file_count(&fc);
     print_file_count(&fc);
-    
+
     // end timing the program
     gettimeofday(&sysTimeEnd, NULL);
     float totaltime2 = (sysTimeEnd.tv_sec - sysTimeStart.tv_sec)
     + (sysTimeEnd.tv_usec - sysTimeStart.tv_usec) / 1000000.0f;
     printf("Process time %f seconds\n", totaltime2);
-    
+
     return 0;
 }
