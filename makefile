@@ -1,5 +1,6 @@
 all: make_tables sort_tables query_a query_b query_c query_d emancipate_tables emancipate_bplus make_bplus_trees
 
+clean:; rm make_tables; rm sort_tables; rm query_a; rm query_b;  rm query_c; rm query_d; rm emancipate_tables; rm emancipate_bplus; rm make_bplus_trees; rm test;
 
 make_tables: make_tables.c user.c message.c timestamp.c datestamp.c city.c state.c record.c file_count.c; gcc -o make_tables make_tables.c user.c message.c timestamp.c datestamp.c city.c state.c record.c file_count.c
 sort_tables: sort_tables.c user.c message.c timestamp.c datestamp.c city.c state.c record.c file_count.c; gcc -o sort_tables sort_tables.c user.c message.c timestamp.c datestamp.c city.c state.c record.c file_count.c

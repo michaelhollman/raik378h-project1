@@ -81,18 +81,6 @@
       <FileRef
          location = "container:../../Desktop/raik378h-project1/make_bplus_trees.c">
       </FileRef>
-      <FileRef
-         location = "container:search_node.h">
-      </FileRef>
-      <FileRef
-         location = "container:search_result.h">
-      </FileRef>
-      <FileRef
-         location = "container:search_tree.c">
-      </FileRef>
-      <FileRef
-         location = "container:search_tree.h">
-      </FileRef>
    </Group>
    <Group
       location = "container:"

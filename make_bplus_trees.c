@@ -221,6 +221,7 @@ int main(int argc, char **argv)
         struct timeval startSysTimeSub, endSysTimeSub;
         gettimeofday(&startSysTimeSub, NULL);
         
+        
         // create root
         int_node_t root;
         root.next = -1;

@@ -6,7 +6,7 @@
 #include <stdbool.h>
 
 // Change this value to adjust the fan-out of the b+ trees
-#define FAN_OUT         200
+#define FAN_OUT         10
 
 #define TEXT_SHORT      64
 #define TEXT_LONG       1024
@@ -37,7 +37,17 @@ typedef struct {
     bool didSplit;
     int newKey;
     int newFile;
-} insert_node_result_t;
+} insert_result_t;
+
+typedef struct search_result_node_t {
+    int fileNumber;
+    struct search_result_node_t *next;
+} search_result_node_t;
+
+typedef struct {
+    int count;
+    search_result_node_t *head;
+} search_result_t;
 
 int filename_for_node(char* outchar, int tableType, int fileNumber);
 
@@ -54,6 +64,15 @@ int compare_nodes(const void *a, const void *b);
 // returns root file num
 int insert_node(int rootFileNum, int tableType, int insertNewKey, int newFileNumToInsert);
 
-void insert_node_internal(insert_node_result_t *result, int nodeFileNum, int tableType, int newKey, int newFileNumToInsert);
+void insert_node_internal(insert_result_t *result, int nodeFileNum, int tableType, int newKey, int newFileNumToInsert);
+
+search_result_t *search_bplus(int rootFileNum, int tableType, int key);
+
+// note: inclusive
+search_result_t *search_bplus_range(int rootFileNum, int tableType, int keyFrom, int keyTo);
+
+int_node_t *search_for_node(int nodeFileNum, int tableType, int key);
+
+void free_search_result(search_result_t *sr);
 
 #endif
