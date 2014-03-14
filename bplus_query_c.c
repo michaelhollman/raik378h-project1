@@ -4,12 +4,13 @@
 #include <string.h>
 #include <stdbool.h>
 
-#include "timestamp.h"
 #include "int_node.h"
 #include "bplus_roots.h"
+#include "timestamp.h"
 #include "file_count.h"
 #include "message.h"
 #include "user.h"
+#include "state.h"
 
 int main(int argc, char **argv)
 {
@@ -28,7 +29,7 @@ int main(int argc, char **argv)
 	int validTimes[61]; //There can only be 61 times
 	int validTimesCount = 0;
 	bool countedUsers[userCount];
-	for (i = 0; i < userCount; i ++)
+	for (int i = 0; i < userCount; i ++)
     {
 		countedUsers[i] = false;
 	}
@@ -45,6 +46,7 @@ int main(int argc, char **argv)
     int stateRoot = roots->state;
     int messageRoot = roots ->message;
     int userRoot = roots ->user;
+    int timestampRoot = roots->timestamp;
 
     // find the leaf nodes that match Nebraska
     search_result_t *state_search_result = search_bplus(stateRoot, TABLE_TYPE_STATE, stateKey);
@@ -59,7 +61,7 @@ int main(int argc, char **argv)
     state_t *state = read_state(state_search_node->fileNumber);
     int nebraskaId = state->stateId;
 
-    search_result_t *userSearchResult = search_bplus(userRoot,TABLE_TYPE_USER,stateID);
+    search_result_t *userSearchResult = search_bplus(userRoot,TABLE_TYPE_USER, nebraskaId);
     search_result_node_t *user_search_node = userSearchResult->head;
 
     for (int i = 0; i < userSearchResult->count;i++){
@@ -100,13 +102,14 @@ int main(int argc, char **argv)
     }
     free_search_result(timestampSearchResult);
 
+    int finalCount = 0;
     for (int i = 0; i < 61; i ++){
       search_result_t *message_search_result = search_bplus(messageRoot, TABLE_TYPE_MESSAGE,validTimes[i] );
       search_result_node_t *message_search_node = message_search_result-> head;
         for (int j = 0; j < message_search_result->count; j++){
             message_t *message = read_message(message_search_node ->fileNumber);
             if (countedUsers[message->userId]){
-                countedUsers[msgp->userId] = false;
+                countedUsers[message->userId] = false;
                 finalCount++;
             }
             free_message(message);
