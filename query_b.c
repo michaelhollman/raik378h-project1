@@ -15,12 +15,12 @@ int main(int argc, char **argv)
     struct timeval sysTimeStart, sysTimeEnd;
     gettimeofday(&sysTimeStart, NULL);
     
-    int i, first, mid, last;
+    int i, first, mid, last, j, k;
     
     int finalCount = 0;
     int timestampID = 0;
     int userID = 0;
-
+    
     // get file counts
     file_count_t *fc = read_file_count();
     int messageCount = fc->messages;
@@ -29,26 +29,23 @@ int main(int argc, char **argv)
     free_file_count(fc);
     
     // arrays to keep track of valid times and counted users
-	bool validTimes[timestampCount];
+	int validTimes[61]; //There can only be 61 times
+	int validTimesCount = 0;
 	bool countedUsers[userCount];
-	for (i = 0; i < timestampCount; i ++)
-    {
-		validTimes[i] = false;
-	}
 	for (i = 0; i < userCount; i ++)
     {
 		countedUsers[i] = false;
 	}
-
+    
     // binary search for a valid timestamp
 	first = 0;
-	last = timestampCount;
+	last = timestampCount - 1;
     bool found = false;
 	while (first <= last && !found)
     {
 		mid = (first + last) / 2;
         timestamp_t *tsp = read_timestamp(mid);
-
+        
 		if (tsp->hour < 8)
         {
 			first = mid + 1;
@@ -72,7 +69,8 @@ int main(int argc, char **argv)
 		timestamp_t *tsp = read_timestamp(i);
 		if (tsp->hour == 8 || (tsp->hour == 9 && tsp->minute == 0))
         {
-            validTimes[tsp->timestampId] = true;
+            validTimes[validTimesCount] = tsp->timestampId;
+			validTimesCount++;
 		}
 		else if (direction == 1) //reset, switch directions
         {
@@ -85,20 +83,72 @@ int main(int argc, char **argv)
 		}
         free_timestamp(tsp);
 	}
-
-    // loop through all messages
-    for (i = 0; i < messageCount; i++) {
-        message_t *msgp = read_message(i);
-        // if the message's time is valid and we haven't counted the user already...
-		if (validTimes[msgp->timestampId] && !countedUsers[msgp->userId])
+    
+    // binary search through all messages
+    for (i = 0; i < validTimesCount; i++)
+    {
+		k = validTimes[i];
+		first = 0;
+		last = messageCount - 1;
+		while(first <= last)
         {
-            // mark user as counted, increment final count
-            countedUsers[msgp->userId] = true;
-            finalCount++;
+			mid = (first + last) / 2;
+			message_t *msgp = read_message(mid);
+			if(msgp->timestampId == k)
+            {
+				if(!countedUsers[msgp->userId])
+                {
+					countedUsers[msgp->userId] = true;
+					finalCount++;
+				}
+				last = first - 1;
+			}
+			else if(msgp->timestampId < k)
+            {
+				first = mid + 1;
+			}
+			else
+            {
+				last = mid - 1;
+			}
+			free_message(msgp);
 		}
-		free_message(msgp);
+		for(j = mid + 1; j < messageCount; j++)
+        {
+			message_t *msgp = read_message(j);
+			if(msgp->timestampId == k)
+            {
+				if(!countedUsers[msgp->userId])
+                {
+					countedUsers[msgp->userId] = true;
+					finalCount++;
+				}
+			}
+			else
+            {
+				j = messageCount;
+			}
+			free_message(msgp);
+		}
+		for(j = mid - 1; j >= 0; j--)
+        {
+			message_t *msgp = read_message(j);
+			if(msgp->timestampId == k)
+            {
+				if(!countedUsers[msgp->userId])
+                {
+					countedUsers[msgp->userId] = true;
+					finalCount++;
+				}
+			}
+			else
+            {
+				j = -1;
+			}
+			free_message(msgp);
+		}
     }
-
+    
     printf("Number of matching users: %d\n", finalCount);
     
     // end timing the program

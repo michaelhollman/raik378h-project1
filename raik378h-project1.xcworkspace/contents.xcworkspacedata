@@ -86,28 +86,16 @@
       location = "container:"
       name = "Queries">
       <FileRef
-         location = "container:query_a.c">
+         location = "container:../../Desktop/raik378h-project1/query_a.c">
       </FileRef>
       <FileRef
-         location = "container:query_b.c">
+         location = "container:../../Desktop/raik378h-project1/query_b.c">
       </FileRef>
       <FileRef
-         location = "container:query_c.c">
+         location = "container:../../Desktop/raik378h-project1/query_c.c">
       </FileRef>
       <FileRef
-         location = "container:query_d.c">
-      </FileRef>
-      <FileRef
-         location = "container:../../Desktop/raik378h-project1/refactored_query_a.c">
-      </FileRef>
-      <FileRef
-         location = "container:../../Desktop/raik378h-project1/refactored_query_b.c">
-      </FileRef>
-      <FileRef
-         location = "container:../../Desktop/raik378h-project1/refactored_query_c.c">
-      </FileRef>
-      <FileRef
-         location = "container:../../Desktop/raik378h-project1/refactored_query_d.c">
+         location = "container:../../Desktop/raik378h-project1/query_d.c">
       </FileRef>
       <FileRef
          location = "group:bplus_query_a.c">

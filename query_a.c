@@ -16,8 +16,8 @@ int main(int argc, char **argv)
     
     // counters, etc.
     int first, mid, last, i,
-    nebraskaUserCount = 0,
-    nebraskaStateId;
+        nebraskaUserCount = 0,
+        nebraskaStateId;
     char nebraskaStr[] = "Nebraska";
     
     // get file counts
@@ -50,16 +50,54 @@ int main(int argc, char **argv)
         
         free_state(state);
 	}
-    
+	
     // note, if we didn't find Nebraska, nebraskaStateId = -1
-    
-	for (i = 0; i < userCount; i++)
+    first = 0;
+	last = userCount - 1;
+	while(first <= last)
     {
+		mid = (first + last) / 2;
+		user_t *user = read_user(mid);
+        if (user->stateId == nebraskaStateId)
+        {
+            nebraskaUserCount++;
+			last = first - 1;
+        }
+		else if(user->stateId < nebraskaStateId)
+		{
+			first = mid + 1;
+		}
+		else
+		{
+			last = mid - 1;
+		}
+		free_user(user);
+	}
+	
+	for(i = mid + 1; i < userCount; i++)
+	{
 		user_t *user = read_user(i);
         if (user->stateId == nebraskaStateId)
         {
             nebraskaUserCount++;
         }
+		else
+		{
+			i = userCount;
+		}
+		free_user(user);
+	}
+	for(i = mid - 1; i >= 0; i--)
+	{
+		user_t *user = read_user(i);
+        if (user->stateId == nebraskaStateId)
+        {
+            nebraskaUserCount++;
+        }
+		else
+		{
+			i = -1;
+		}
 		free_user(user);
 	}
     

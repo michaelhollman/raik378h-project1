@@ -16,10 +16,10 @@ int main(int argc, char **argv)
     struct timeval sysTimeStart, sysTimeEnd;
     gettimeofday(&sysTimeStart, NULL);
     
-    int nebraskaStateId, first, last, mid, i,
+    int nebraskaStateId, first, last, mid, i, j, k,
     finalCount = 0;
     char nebraskaStr[]  = "Nebraska";
-
+    
     // get file counts
     file_count_t *fc = read_file_count();
     int userCount = fc->users;
@@ -29,13 +29,12 @@ int main(int argc, char **argv)
     free_file_count(fc);
     
 	// arrays to keep track of valid times and counted users
-	bool validTimes[timestampCount];
+	int validTimes[61];
+	int validTimesCount = 0;
     bool validUsers[userCount];
-    for (i = 0; i < timestampCount; i ++)
-    {
-		validTimes[i] = false;
+    for(i = 0; i < userCount; i++){
+		validUsers[i] = false;
 	}
-    // user bool array initialized later
     
     // binary search states to get Nebraska's ID
 	first = 0;
@@ -62,12 +61,53 @@ int main(int argc, char **argv)
         free_state(state);
 	}
     
-    // mark all users from Nebraska as valid, else invalid
-    for (i = 0; i < userCount; i++)
+    first = 0;
+	last = userCount - 1;
+	while(first <= last)
     {
+		mid = (first + last) / 2;
+		user_t *user = read_user(mid);
+        if (user->stateId == nebraskaStateId)
+        {
+            validUsers[user->userId] = true;
+			last = first - 1;
+        }
+		else if(user->stateId < nebraskaStateId)
+		{
+			first = mid + 1;
+		}
+		else
+		{
+			last = mid - 1;
+		}
+		free_user(user);
+	}
+	
+	for(i = mid + 1; i < userCount; i++)
+	{
 		user_t *user = read_user(i);
-        validUsers[user->userId] = (user->stateId == nebraskaStateId);
-        free_user(user);
+        if (user->stateId == nebraskaStateId)
+        {
+            validUsers[user->userId] = true;
+        }
+		else
+		{
+			i = userCount;
+		}
+		free_user(user);
+	}
+	for(i = mid - 1; i >= 0; i--)
+	{
+		user_t *user = read_user(i);
+        if (user->stateId == nebraskaStateId)
+        {
+            validUsers[user->userId] = true;
+        }
+		else
+		{
+			i = -1;
+		}
+		free_user(user);
 	}
     
     // binary search for a valid timestamp
@@ -102,7 +142,8 @@ int main(int argc, char **argv)
 		timestamp_t *tsp = read_timestamp(i);
 		if (tsp->hour == 8 || (tsp->hour == 9 && tsp->minute == 0))
         {
-            validTimes[tsp->timestampId] = true;
+            validTimes[validTimesCount] = tsp->timestampId;
+			validTimesCount++;
 		}
 		else if (direction == 1) //reset, switch directions
         {
@@ -115,19 +156,71 @@ int main(int argc, char **argv)
 		}
         free_timestamp(tsp);
 	}
-     
-    // loop through all messages
-	for(i = 0; i < messageCount; i++)
+	
+	for (i = 0; i < validTimesCount; i++)
     {
-		message_t *message = read_message(i);
-		if(validTimes[message->timestampId] && validUsers[message->userId])
+		k = validTimes[i];
+		first = 0;
+		last = messageCount - 1;
+		while(first <= last)
         {
-            validUsers[message->userId] = false; // don't count user again
-            finalCount++;
-			
+			mid = (first + last) / 2;
+			message_t *msgp = read_message(mid);
+			if(msgp->timestampId == k)
+            {
+				if(validUsers[msgp->userId])
+                {
+					validUsers[msgp->userId] = false;
+					finalCount++;
+				}
+				last = first - 1;
+			}
+			else if(msgp->timestampId < k)
+            {
+				first = mid + 1;
+			}
+			else
+            {
+				last = mid - 1;
+			}
+			free_message(msgp);
 		}
-		free_message(message);
-	}
+		for(j = mid + 1; j < messageCount; j++)
+        {
+			message_t *msgp = read_message(j);
+			if(msgp->timestampId == k)
+            {
+				if(validUsers[msgp->userId])
+                {
+					validUsers[msgp->userId] = false;
+					finalCount++;
+				}
+			}
+			else
+            {
+				j = messageCount;
+			}
+			free_message(msgp);
+		}
+		for(j = mid - 1; j >= 0; j--)
+        {
+			message_t *msgp = read_message(j);
+			if(msgp->timestampId == k)
+            {
+				if(validUsers[msgp->userId])
+                {
+					validUsers[msgp->userId] = false;
+					finalCount++;
+				}
+			}
+			else
+            {
+				j = -1;
+			}
+			free_message(msgp);
+		}
+    }
+    
     
     printf("Number of matching users: %d\n", finalCount);
     
