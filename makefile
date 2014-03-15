@@ -19,5 +19,3 @@ emancipate_tables: emancipate_tables.c; gcc -o emancipate_tables emancipate_tabl
 emancipate_bplus: emancipate_bplus.c; gcc -o emancipate_bplus emancipate_bplus.c
 
 make_bplus_trees: make_bplus_trees.c int_node.c user.c message.c timestamp.c datestamp.c city.c state.c record.c file_count.c bplus_roots.c; gcc -o make_bplus_trees make_bplus_trees.c int_node.c user.c message.c timestamp.c datestamp.c city.c state.c record.c file_count.c bplus_roots.c -lm -std=c99
-
-test: test.c int_node.c user.c message.c timestamp.c datestamp.c city.c state.c record.c file_count.c bplus_roots.c; gcc -o test test.c int_node.c user.c message.c timestamp.c datestamp.c city.c state.c record.c file_count.c bplus_roots.c -lm -std=c99
